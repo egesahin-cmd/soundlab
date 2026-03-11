@@ -5,79 +5,90 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0a0a0f">
-<title>SoundLab — Tone · Noise · Call</title>
+<meta name="theme-color" content="#f5f2ed">
+<title>PHONELAB</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:#0a0a0f;font-family:'DM Mono',monospace;color:#fff}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#f5f2ed;font-family:'DM Mono',monospace;color:#1a1a1a}
+input,button{font-family:'DM Mono',monospace}
 #app{max-width:480px;margin:0 auto;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden}
-.header{padding:16px 16px 0;text-align:center}
-.header h1{font-size:18px;font-weight:700;letter-spacing:6px;margin-bottom:2px}
-.header .sub{font-size:9px;color:#fff3;letter-spacing:3px}
-.tabs{display:flex;margin:14px 16px 0;border-radius:12px;background:#fff08;overflow:hidden}
-.tab{flex:1;padding:12px 0;border:none;background:transparent;color:#fff4;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:2px;border-bottom:2px solid transparent;transition:all .2s}
-.tab.active-tone{background:#0ff18;color:#0ff;border-bottom-color:#0ff}
-.tab.active-noise{background:#f0a18;color:#f0a;border-bottom-color:#f0a}
-.tab.active-call{background:#4f818;color:#4f8;border-bottom-color:#4f8}
-.content{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:40px;-webkit-overflow-scrolling:touch}
-.module{display:none;padding:20px 16px}
-.module.active{display:flex;flex-direction:column;align-items:center;gap:16px}
-.footer{padding:8px;text-align:center;font-size:9px;color:#fff2}
-/* Range sliders */
-input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#fff2;outline:none;cursor:pointer;width:100%}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:none;cursor:pointer}
-.accent-cyan input[type=range]::-webkit-slider-thumb{background:#0ff}
-.accent-pink input[type=range]::-webkit-slider-thumb{background:#f0a}
-/* Vertical sliders */
-.vslider{writing-mode:vertical-lr;direction:rtl;height:140px;width:28px}
-.vslider::-webkit-slider-thumb{width:28px;height:14px;border-radius:4px;background:#f0a}
-/* Buttons */
-.btn-sm{width:48px;height:36px;border-radius:8px;background:#fff1;border:1px solid #fff2;color:#fffc;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace}
-.btn-sm:active{background:#fff2}
-.wave-btn{width:64px;height:52px;border-radius:10px;background:#fff1;border:2px solid #fff2;color:#fff8;font-size:11px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:'DM Mono',monospace}
-.wave-btn.active{background:#0ff15;border-color:#0ff;color:#0ff}
-.play-btn{width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.header{padding:18px 16px 0;text-align:center}
+.header h1{font-size:17px;font-weight:500;letter-spacing:8px;color:#1a1a1a}
+.header .sub{font-size:8px;color:#999;letter-spacing:4px;margin-top:2px}
+.tabs{display:flex;margin:14px 16px 0;border-bottom:1px solid #ccc}
+.tab{flex:1;padding:10px 0;border:none;background:transparent;color:#aaa;font-size:12px;font-weight:500;cursor:pointer;letter-spacing:3px;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.module{display:none;padding:20px 16px 40px}
+.module.active{display:flex;flex-direction:column;align-items:center;gap:18px}
+.footer{padding:6px;text-align:center;font-size:8px;color:#bbb;letter-spacing:1px}
+.label{font-size:9px;color:#999;letter-spacing:1px}
+.label-row{display:flex;justify-content:space-between;margin-bottom:4px;width:100%}
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:#ccc;outline:none;cursor:pointer;width:100%}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#1a1a1a;border:none;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#1a1a1a;border:none;cursor:pointer}
+.btn-sm{height:34px;padding:0 14px;border-radius:6px;background:#fff;border:1px solid #ccc;color:#1a1a1a;font-size:13px;font-weight:500;cursor:pointer;transition:background .1s}
+.btn-sm:active{background:#eee}
+.wave-btn{width:60px;height:48px;border-radius:8px;background:#fff;border:1px solid #ccc;color:#999;font-size:10px;font-weight:500;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:all .15s}
+.wave-btn.active{background:#1a1a1a;border-color:#1a1a1a;color:#f5f2ed}
+.play-btn{width:68px;height:68px;border-radius:50%;border:2px solid #1a1a1a;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .play-btn:active{transform:scale(.95)}
-.preset-btn{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;background:#fff1;border:1px solid #fff2;color:#fffa;cursor:pointer;font-family:'DM Mono',monospace}
-.preset-btn.active{background:#f0a15;border-color:#f0a;color:#f0a}
+.play-btn.playing{background:#1a1a1a}
+.range-row{width:100%;max-width:340px}
+.preset-btn{padding:5px 10px;border-radius:4px;font-size:10px;font-weight:500;background:#fff;border:1px solid #ccc;color:#888;cursor:pointer;transition:all .1s}
+.preset-btn.active{background:#1a1a1a;border-color:#1a1a1a;color:#f5f2ed}
 .preset-btn:active{opacity:.7}
-.label{font-size:10px;color:#fff4;font-family:'DM Mono',monospace}
-.range-row{width:100%;max-width:360px}
-.range-labels{display:flex;justify-content:space-between;margin-bottom:4px}
-/* Call */
-.call-input{width:100%;max-width:280px;padding:14px 18px;background:#fff1;border:2px solid #fff2;border-radius:12px;color:#fff;font-size:16px;text-align:center;font-family:'DM Mono',monospace;outline:none}
-.call-input:focus{border-color:#4f8}
-.enter-btn{padding:14px 48px;border-radius:12px;border:none;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s}
-.call-ctrl{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer}
-.call-ctrl-circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.pulse{animation:pulse 2s infinite}
-.freq-display{cursor:pointer;user-select:none}
-.freq-num{font-size:42px;font-weight:800;color:#0ff;text-shadow:0 0 20px #0ff6,0 0 40px #0ff2}
-.freq-hz{font-size:18px;color:#0ff9;font-weight:600;margin-left:6px}
-.freq-edit{width:120px;text-align:center;font-size:32px;font-weight:700;background:#111;border:2px solid #0ff;border-radius:8px;color:#0ff;padding:4px 8px;font-family:'DM Mono',monospace;outline:none}
+.eq-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
+.eq-track{position:relative;width:28px;height:150px;background:#e8e5e0;border-radius:14px;cursor:pointer;touch-action:none}
+.eq-fill{position:absolute;bottom:0;left:0;right:0;background:#c5c0b8;border-radius:14px;pointer-events:none;transition:height 0.05s linear}
+.eq-thumb{position:absolute;left:50%;width:24px;height:12px;background:#1a1a1a;border-radius:6px;transform:translate(-50%,-50%);pointer-events:none;transition:top 0.05s linear}
+.eq-label{font-size:8px;color:#999;letter-spacing:0}
+.call-input{width:100%;max-width:280px;padding:12px 16px;background:#fff;border:1px solid #ccc;border-radius:8px;color:#1a1a1a;font-size:15px;text-align:center;outline:none;-webkit-user-select:text;user-select:text}
+.call-input:focus{border-color:#1a1a1a}
+.enter-btn{padding:12px 44px;border-radius:8px;border:1px solid #ccc;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;background:#fff;color:#999}
+.enter-btn.ready{background:#1a1a1a;border-color:#1a1a1a;color:#f5f2ed}
+.call-ctrl{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer}
+.call-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;border:1.5px solid #ccc;background:#fff;color:#888}
+.call-circle.on{border-color:#2a2a2a;color:#1a1a1a;background:#fff}
+.call-circle.exit{border-color:#c44;color:#c44}
+.call-circle.green{border-color:#3a3;color:#3a3;background:#fff}
+.freq-display{cursor:pointer}
+.freq-num{font-size:36px;font-weight:500;color:#1a1a1a;letter-spacing:-1px}
+.freq-hz{font-size:14px;color:#999;font-weight:400;margin-left:4px}
+.freq-edit{width:140px;text-align:center;font-size:28px;font-weight:500;background:#fff;border:1px solid #1a1a1a;border-radius:6px;color:#1a1a1a;padding:4px 8px;outline:none;-webkit-user-select:text;user-select:text}
+.meter-bar{width:100%;max-width:300px;height:4px;background:#e8e5e0;border-radius:2px;overflow:hidden}
+.meter-fill{height:100%;background:#1a1a1a;border-radius:2px;transition:width 0.08s linear;width:0%}
+.user-card{padding:10px 14px;background:#fff;border:1px solid #e0ddd8;border-radius:8px;display:flex;align-items:center;gap:10px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#e8e5e0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#888}
+.user-name{font-size:13px;color:#1a1a1a}
+.user-dot{margin-left:auto;width:5px;height:5px;border-radius:50%}
+.room-badge{padding:6px 16px;border-radius:16px;border:1px solid #ccc;display:flex;align-items:center;gap:8px;background:#fff}
+.room-dot{width:6px;height:6px;border-radius:50%;background:#3a3;animation:pulse 2s infinite}
+.room-name{font-size:13px;font-weight:500;color:#1a1a1a}
+.count-box{padding:4px 12px;border:1px solid #ccc;border-radius:4px;font-size:11px;color:#888;background:#fff}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="header"><h1>SOUNDLAB</h1><div class="sub">TONE · NOISE · CALL</div></div>
+  <div class="header"><h1>PHONELAB</h1><div class="sub">TONE · NOISE · CALL</div></div>
   <div class="tabs">
-    <button class="tab active-tone" id="tabTone" onclick="switchTab('tone')">TONE</button>
+    <button class="tab active" id="tabTone" onclick="switchTab('tone')">TONE</button>
     <button class="tab" id="tabNoise" onclick="switchTab('noise')">NOISE</button>
     <button class="tab" id="tabCall" onclick="switchTab('call')">CALL</button>
   </div>
   <div class="content">
-    <!-- TONE MODULE -->
-    <div class="module active accent-cyan" id="modTone">
-      <div id="waveformBtns" style="display:flex;gap:8px"></div>
+    <!-- TONE -->
+    <div class="module active" id="modTone">
+      <div id="waveformBtns" style="display:flex;gap:6px"></div>
       <div style="text-align:center">
         <div id="freqDisplay" class="freq-display" onclick="startFreqEdit()">
-          <span id="freqNum" class="freq-num">440</span><span class="freq-hz">Hz</span>
+          <span id="freqNum" class="freq-num">440.00</span><span class="freq-hz">Hz</span>
         </div>
         <div id="freqEditWrap" style="display:none;align-items:center;gap:8px;justify-content:center">
-          <input type="number" id="freqEditInput" class="freq-edit" min="1" max="20000">
+          <input type="number" id="freqEditInput" class="freq-edit" min="1" max="20000" step="0.01">
           <span class="freq-hz">Hz</span>
         </div>
         <div class="label" style="margin-top:4px">TAP TO EDIT</div>
@@ -89,419 +100,448 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="btn-sm" onclick="toneDouble()">×2</button>
       </div>
       <div class="range-row">
-        <div class="range-labels label"><span>1 Hz</span><span>FREQUENCY</span><span>20 kHz</span></div>
-        <input type="range" id="freqSlider" min="0" max="1000" value="500" oninput="onFreqSlider(this.value)">
+        <div class="label-row label"><span>1 Hz</span><span>FREQUENCY</span><span>20 kHz</span></div>
+        <input type="range" id="freqSlider" min="0" max="10000" value="5000" oninput="onFreqSlider(this.value)">
       </div>
       <div class="range-row">
-        <div class="range-labels label"><span>0%</span><span id="toneVolLabel">VOLUME — 50%</span><span>100%</span></div>
+        <div class="label-row label"><span>0%</span><span id="toneVolLabel">VOLUME — 50%</span><span>100%</span></div>
         <input type="range" id="toneVolSlider" min="0" max="100" value="50" oninput="onToneVol(this.value)">
       </div>
-      <button class="play-btn" id="tonePlayBtn" onclick="toggleTone()" style="background:#0ff;box-shadow:0 0 30px #0ff6">
-        <div id="tonePlayIcon" style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:24px solid #111;margin-left:4px"></div>
+      <button class="play-btn" id="tonePlayBtn" onclick="toggleTone()">
+        <svg id="toneIcPlay" width="22" height="22" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#1a1a1a"/></svg>
+        <svg id="toneIcStop" width="20" height="20" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#f5f2ed"/></svg>
       </button>
-      <div class="label" id="tonePlayLabel" style="margin-top:-8px">PLAY</div>
+      <div class="label" id="tonePlayLabel">PLAY</div>
     </div>
-
-    <!-- NOISE MODULE -->
-    <div class="module accent-pink" id="modNoise">
-      <div style="width:100%;max-width:380px">
-        <div class="label" style="margin-bottom:6px">COLOUR PRESETS</div>
-        <div id="colorPresets" style="display:flex;flex-wrap:wrap;gap:5px"></div>
-        <div class="label" style="margin:10px 0 6px">FREQUENCY PRESETS</div>
-        <div id="freqPresets" style="display:flex;flex-wrap:wrap;gap:5px"></div>
-        <div class="label" style="margin:10px 0 6px">SPECIAL</div>
-        <div id="specialPresets" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+    <!-- NOISE -->
+    <div class="module" id="modNoise">
+      <div style="width:100%;max-width:360px">
+        <div class="label" style="margin-bottom:5px">COLOUR</div>
+        <div id="colorPresets" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+        <div class="label" style="margin:8px 0 5px">FREQUENCY</div>
+        <div id="freqPresets" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+        <div class="label" style="margin:8px 0 5px">SPECIAL</div>
+        <div id="specialPresets" style="display:flex;flex-wrap:wrap;gap:4px"></div>
       </div>
-      <div id="eqSliders" style="display:flex;gap:4px;align-items:flex-end;justify-content:center;width:100%;max-width:380px;height:200px;padding:10px 0"></div>
-      <div class="range-row" style="max-width:380px">
-        <div class="range-labels label"><span>0%</span><span id="noiseVolLabel">MASTER — 60%</span><span>100%</span></div>
+      <div id="eqSliders" style="display:flex;gap:2px;justify-content:center;width:100%;max-width:360px;padding:6px 0"></div>
+      <div class="range-row" style="max-width:360px">
+        <div class="label-row label"><span>0%</span><span id="noiseVolLabel">MASTER — 60%</span><span>100%</span></div>
         <input type="range" id="noiseVolSlider" min="0" max="100" value="60" oninput="onNoiseVol(this.value)">
       </div>
-      <button class="play-btn" id="noisePlayBtn" onclick="toggleNoise()" style="background:#f0a;box-shadow:0 0 30px #f0a6">
-        <div id="noisePlayIcon" style="width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:22px solid #fff;margin-left:4px"></div>
+      <button class="play-btn" id="noisePlayBtn" onclick="toggleNoise()">
+        <svg id="noiseIcPlay" width="22" height="22" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#1a1a1a"/></svg>
+        <svg id="noiseIcStop" width="20" height="20" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#f5f2ed"/></svg>
       </button>
-      <div class="label" id="noisePlayLabel" style="margin-top:-8px">PLAY</div>
+      <div class="label" id="noisePlayLabel">PLAY</div>
     </div>
-
-    <!-- CALL MODULE -->
+    <!-- CALL -->
     <div class="module" id="modCall">
-      <div id="callLobby" style="display:flex;flex-direction:column;align-items:center;gap:20px;padding-top:20px">
-        <div style="width:80px;height:80px;border-radius:50%;background:#4f833;display:flex;align-items:center;justify-content:center;border:2px solid #4f8">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4f8" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <div id="callLobby" style="display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:16px">
+        <div style="width:64px;height:64px;border-radius:50%;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
         </div>
         <div style="text-align:center">
-          <div style="font-size:22px;font-weight:700">Group Call</div>
-          <div style="font-size:12px;color:#fff5;margin-top:4px">Enter a room name to start or join</div>
+          <div style="font-size:18px;font-weight:500;letter-spacing:2px">GROUP CALL</div>
+          <div style="font-size:11px;color:#999;margin-top:4px">enter a room name to start or join</div>
         </div>
-        <input type="text" id="roomInput" class="call-input" placeholder="Room name..." onkeydown="if(event.key==='Enter')joinRoom()">
-        <button id="enterBtn" class="enter-btn" onclick="joinRoom()" style="background:#fff2;color:#fff4">ENTER</button>
-        <div id="callError" style="color:#f66;font-size:12px;display:none"></div>
-        <div style="margin-top:10px;padding:16px;background:#fff08;border-radius:12px;max-width:300px;width:100%">
-          <div style="font-size:11px;color:#fff6;line-height:1.6">ℹ️ Group calls require the signaling server. See the setup guide to deploy the full app with call support.</div>
-        </div>
+        <input type="text" id="roomInput" class="call-input" placeholder="room name..." oninput="onRoomInput()" onkeydown="if(event.key==='Enter')joinRoom()">
+        <button id="enterBtn" class="enter-btn" onclick="joinRoom()">ENTER</button>
+        <div id="callError" style="color:#c44;font-size:11px;display:none"></div>
       </div>
-      <div id="callRoom" style="display:none;flex-direction:column;align-items:center;gap:16px;padding-top:10px">
-        <div style="padding:8px 20px;border-radius:20px;background:#4f822;border:1px solid #4f866;display:flex;align-items:center;gap:8px">
-          <div style="width:8px;height:8px;border-radius:50%;background:#4f8" class="pulse"></div>
-          <span id="roomLabel" style="font-size:14px;color:#4f8;font-weight:700"></span>
+      <div id="callRoom" style="display:none;flex-direction:column;align-items:center;gap:14px;padding-top:8px">
+        <div class="room-badge">
+          <div class="room-dot"></div>
+          <span id="roomLabel" class="room-name"></span>
         </div>
-        <div id="userList" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;margin-top:8px"></div>
-        <div style="display:flex;gap:12px;margin-top:20px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="count-box"><span id="userCount">1</span> in room</div>
+        </div>
+        <div class="label" style="margin-top:2px">OUTPUT LEVEL</div>
+        <div class="meter-bar"><div class="meter-fill" id="loudnessFill"></div></div>
+        <div id="userList" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:300px;margin-top:4px"></div>
+        <div style="display:flex;gap:10px;margin-top:16px">
           <button class="call-ctrl" onclick="toggleSpeakerphone()">
-            <div id="spkrphoneCircle" class="call-ctrl-circle" style="background:#4f822;border:2px solid #4f8;color:#4f8">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+            <div id="spkrCircle" class="call-circle on">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
             </div>
-            <span class="label" style="font-weight:600">SPEAKER</span>
+            <span class="label" style="font-size:8px">SPEAKER</span>
           </button>
           <button class="call-ctrl" onclick="toggleCallMic()">
-            <div id="micCircle" class="call-ctrl-circle" style="background:#4f822;border:2px solid #4f8;color:#4f8">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            <div id="micCircle" class="call-circle green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
             </div>
-            <span class="label" id="micLabel" style="font-weight:600">MIC ON</span>
+            <span class="label" id="micLabel" style="font-size:8px">MIC ON</span>
           </button>
           <button class="call-ctrl" onclick="toggleCallAudio()">
-            <div id="audioCircle" class="call-ctrl-circle" style="background:#4f822;border:2px solid #4f8;color:#4f8">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+            <div id="audioCircle" class="call-circle on">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
             </div>
-            <span class="label" id="audioLabel" style="font-weight:600">AUDIO</span>
+            <span class="label" id="audioLabel" style="font-size:8px">AUDIO</span>
           </button>
           <button class="call-ctrl" onclick="exitRoom()">
-            <div class="call-ctrl-circle" style="background:#f4411;border:2px solid #fff3;color:#fff6">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3"/><line x1="23" y1="1" x2="17" y2="7"/><line x1="17" y1="1" x2="23" y2="7"/></svg>
+            <div class="call-circle exit">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </div>
-            <span class="label" style="font-weight:600;color:#f44">EXIT</span>
+            <span class="label" style="font-size:8px;color:#c44">EXIT</span>
           </button>
         </div>
       </div>
     </div>
   </div>
-  <div class="footer">⚠ Protect your hearing — avoid extreme volumes</div>
+  <div class="footer">PROTECT YOUR HEARING — AVOID EXTREME VOLUMES</div>
 </div>
-
-<script src="/socket.io/socket.io.js" onerror="console.log('Socket.io not available - call feature requires server')"></script>
+<script src="/socket.io/socket.io.js" onerror="console.log('Socket.io not loaded')"></script>
 <script>
-/* ══════════════════════════════════════
-   STATE
-   ══════════════════════════════════════ */
+/* ═══════ CONSTANTS ═══════ */
 const WAVEFORMS=['sine','sawtooth','square','triangle'];
 const WAVE_ICONS=['∿','⩘','⊓','△'];
 const WAVE_NAMES=['SINE','SAW','SQR','TRI'];
 const BANDS=[31,62,125,250,500,1000,2000,4000,8000,16000];
 const BAND_LABELS=['31','62','125','250','500','1k','2k','4k','8k','16k'];
 const PRESETS={
-  Brown:[100,88,68,48,28,14,5,0,0,0],
-  Pink:[88,80,72,64,56,48,40,32,24,16],
-  White:[50,50,50,50,50,50,50,50,50,50],
-  Grey:[78,62,44,34,30,30,34,44,62,78],
-  Infra:[100,80,40,10,0,0,0,0,0,0],
-  Ultra:[0,0,0,0,0,10,40,80,100,100],
-  '~60Hz':[8,100,8,0,0,0,0,0,0,0],
-  '~125Hz':[0,8,100,8,0,0,0,0,0,0],
-  '~250Hz':[0,0,8,100,8,0,0,0,0,0],
-  '~500Hz':[0,0,0,8,100,8,0,0,0,0],
-  '~1kHz':[0,0,0,0,8,100,8,0,0,0],
-  '~2kHz':[0,0,0,0,0,8,100,8,0,0],
-  '~4kHz':[0,0,0,0,0,0,8,100,8,0],
-  '~8kHz':[0,0,0,0,0,0,0,8,100,8],
+  Brown:[100,88,68,48,28,14,5,0,0,0],Pink:[88,80,72,64,56,48,40,32,24,16],
+  White:[50,50,50,50,50,50,50,50,50,50],Grey:[78,62,44,34,30,30,34,44,62,78],
+  Infra:[100,80,40,10,0,0,0,0,0,0],Ultra:[0,0,0,0,0,10,40,80,100,100],
+  '~60Hz':[8,100,8,0,0,0,0,0,0,0],'~125Hz':[0,8,100,8,0,0,0,0,0,0],
+  '~250Hz':[0,0,8,100,8,0,0,0,0,0],'~500Hz':[0,0,0,8,100,8,0,0,0,0],
+  '~1kHz':[0,0,0,0,8,100,8,0,0,0],'~2kHz':[0,0,0,0,0,8,100,8,0,0],
+  '~4kHz':[0,0,0,0,0,0,8,100,8,0],'~8kHz':[0,0,0,0,0,0,0,8,100,8],
   'Speech Blocker':[0,8,38,100,100,78,38,8,0,0],
   'Ear Massage':[58,58,58,58,58,58,58,58,58,58],
 };
 
-let audioCtx=null, toneOsc=null, toneGain=null;
-let tonePlaying=false, toneFreq=440, toneVol=50, toneWave=0;
-let noiseNodes=[], noiseMasterGain=null, noisePlaying=false;
-let noiseSliders=[50,50,50,50,50,50,50,50,50,50], noiseVol=60, activePreset='White';
-let callStream=null, micOn=true, speakerOn=true, speakerphoneOn=true, inRoom=false;
-let socket=null, peers={};
+/* ═══════ FREQ MAPPING — slider center = 700 Hz ═══════
+   Quadratic in log-space: ln(f) = A·x² + B·x
+   Solved for: x=0→1Hz, x=0.5→700Hz, x=1→20000Hz */
+const FA=-6.398, FB=16.301;
+function sliderToFreq(v){
+  const x=v/10000;
+  return Math.max(1,Math.min(20000,Math.exp(FA*x*x+FB*x)));
+}
+function freqToSlider(f){
+  const lnf=Math.log(Math.max(1,Math.min(20000,f)));
+  const disc=FB*FB+4*FA*lnf; // 4*(-A)*lnf with A negative → FB²+4*FA*lnf
+  if(disc<0)return 5000;
+  // Solve: FA·x²+FB·x-lnf=0 → x=(-FB+√(FB²+4·|FA|·lnf))/(2·FA)
+  // Since FA<0, use: x=(FB-√disc)/(2·(-FA))
+  const x=(FB-Math.sqrt(Math.max(0,disc)))/(2*(-FA));
+  return Math.round(Math.max(0,Math.min(10000,x*10000)));
+}
 
-/* ══════════════════════════════════════
-   AUDIO CONTEXT
-   ══════════════════════════════════════ */
+/* ═══════ LOGARITHMIC VOLUME — cubic ═══════ */
+function volToGain(v){const n=v/100;return n*n*n;}
+
+/* ═══════ AUDIO CTX ═══════ */
+let audioCtx=null;
 function getCtx(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') audioCtx.resume();
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
   return audioCtx;
 }
 function makeNoiseBuffer(ctx){
-  const sz=ctx.sampleRate*4, buf=ctx.createBuffer(1,sz,ctx.sampleRate), d=buf.getChannelData(0);
-  for(let i=0;i<sz;i++) d[i]=Math.random()*2-1;
-  return buf;
+  const sz=ctx.sampleRate*4,buf=ctx.createBuffer(1,sz,ctx.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<sz;i++)d[i]=Math.random()*2-1;return buf;
 }
 
-/* ══════════════════════════════════════
-   TAB SWITCHING
-   ══════════════════════════════════════ */
+/* ═══════ TABS ═══════ */
 function switchTab(t){
-  // Stop other modules
-  if(t!=='tone'&&tonePlaying) toggleTone();
-  if(t!=='noise'&&noisePlaying) toggleNoise();
-  document.querySelectorAll('.tab').forEach(el=>{el.className='tab'});
-  document.querySelectorAll('.module').forEach(el=>{el.classList.remove('active')});
-  document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).className='tab active-'+t;
-  document.getElementById('mod'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
+  if(t!=='tone'&&tonePlaying)toggleTone();
+  if(t!=='noise'&&noisePlaying)toggleNoise();
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.module').forEach(el=>el.classList.remove('active'));
+  const id=t.charAt(0).toUpperCase()+t.slice(1);
+  document.getElementById('tab'+id).classList.add('active');
+  document.getElementById('mod'+id).classList.add('active');
 }
 
-/* ══════════════════════════════════════
-   TONE MODULE
-   ══════════════════════════════════════ */
+/* ═══════ TONE ═══════ */
+let toneOsc=null,toneGain=null,tonePlaying=false,toneFreq=440.00,toneVol=50,toneWave=0;
+
 function initWaveButtons(){
   const c=document.getElementById('waveformBtns');
   WAVEFORMS.forEach((w,i)=>{
     const b=document.createElement('button');
-    b.className='wave-btn'+(i===0?' active':'');
-    b.id='wb'+i;
-    b.innerHTML=`<span style="font-size:20px">${WAVE_ICONS[i]}</span><span>${WAVE_NAMES[i]}</span>`;
-    b.onclick=()=>setWave(i);
-    c.appendChild(b);
+    b.className='wave-btn'+(i===0?' active':'');b.id='wb'+i;
+    b.innerHTML='<span style="font-size:18px">'+WAVE_ICONS[i]+'</span><span>'+WAVE_NAMES[i]+'</span>';
+    b.onclick=()=>setWave(i);c.appendChild(b);
   });
 }
 function setWave(i){
   toneWave=i;
-  document.querySelectorAll('.wave-btn').forEach((b,j)=>{b.className='wave-btn'+(j===i?' active':'')});
-  if(toneOsc) toneOsc.type=WAVEFORMS[i];
+  document.querySelectorAll('.wave-btn').forEach((b,j)=>b.className='wave-btn'+(j===i?' active':''));
+  if(toneOsc)toneOsc.type=WAVEFORMS[i];
 }
-function sliderToFreq(v){return Math.max(1,Math.round(1*Math.pow(20000,v/1000)))}
-function freqToSlider(f){return Math.round(1000*Math.log(Math.max(1,f))/Math.log(20000))}
 function updateFreqDisplay(){
-  document.getElementById('freqNum').textContent=toneFreq.toLocaleString();
+  document.getElementById('freqNum').textContent=toneFreq.toFixed(2);
   document.getElementById('freqSlider').value=freqToSlider(toneFreq);
 }
 function setFreq(f){
-  toneFreq=Math.max(1,Math.min(20000,Math.round(f)));
-  if(toneOsc) toneOsc.frequency.setTargetAtTime(toneFreq,audioCtx.currentTime,0.008);
+  toneFreq=Math.round(Math.max(1,Math.min(20000,f))*100)/100;
+  if(toneOsc&&audioCtx)toneOsc.frequency.setTargetAtTime(toneFreq,audioCtx.currentTime,0.008);
   updateFreqDisplay();
 }
-function onFreqSlider(v){setFreq(sliderToFreq(Number(v)))}
-function toneStep(d){setFreq(toneFreq+d)}
-function toneHalf(){setFreq(Math.max(1,Math.round(toneFreq/2)))}
-function toneDouble(){setFreq(Math.min(20000,toneFreq*2))}
+function onFreqSlider(v){setFreq(sliderToFreq(Number(v)));}
+function toneStep(d){setFreq(toneFreq+d);}
+function toneHalf(){setFreq(toneFreq/2);}
+function toneDouble(){setFreq(toneFreq*2);}
 function onToneVol(v){
   toneVol=Number(v);
   document.getElementById('toneVolLabel').textContent='VOLUME — '+toneVol+'%';
-  if(toneGain) toneGain.gain.setTargetAtTime(toneVol/100,audioCtx.currentTime,0.02);
+  if(toneGain&&audioCtx)toneGain.gain.setTargetAtTime(volToGain(toneVol),audioCtx.currentTime,0.02);
 }
 function startFreqEdit(){
   document.getElementById('freqDisplay').style.display='none';
-  const w=document.getElementById('freqEditWrap');
-  w.style.display='flex';
+  const w=document.getElementById('freqEditWrap');w.style.display='flex';
   const inp=document.getElementById('freqEditInput');
-  inp.value=toneFreq;
-  inp.focus();
-  inp.select();
-  inp.onkeydown=e=>{if(e.key==='Enter')endFreqEdit();if(e.key==='Escape'){w.style.display='none';document.getElementById('freqDisplay').style.display=''}};
+  inp.value=toneFreq.toFixed(2);inp.focus();inp.select();
+  inp.onkeydown=e=>{if(e.key==='Enter')endFreqEdit();if(e.key==='Escape'){w.style.display='none';document.getElementById('freqDisplay').style.display='';}};
   inp.onblur=()=>endFreqEdit();
 }
 function endFreqEdit(){
   const v=parseFloat(document.getElementById('freqEditInput').value);
-  if(!isNaN(v)&&v>=1&&v<=20000) setFreq(v);
+  if(!isNaN(v)&&v>=1&&v<=20000)setFreq(v);
   document.getElementById('freqEditWrap').style.display='none';
   document.getElementById('freqDisplay').style.display='';
 }
 function toggleTone(){
   const ctx=getCtx();
   if(tonePlaying){
-    if(toneOsc){toneOsc.stop();toneOsc=null}
+    if(toneOsc){toneOsc.stop();toneOsc=null;}
     tonePlaying=false;
-    document.getElementById('tonePlayBtn').style.background='#0ff';
-    document.getElementById('tonePlayBtn').style.boxShadow='0 0 30px #0ff6';
-    document.getElementById('tonePlayIcon').outerHTML='<div id="tonePlayIcon" style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:24px solid #111;margin-left:4px"></div>';
+    document.getElementById('tonePlayBtn').classList.remove('playing');
+    document.getElementById('toneIcPlay').style.display='';
+    document.getElementById('toneIcStop').style.display='none';
     document.getElementById('tonePlayLabel').textContent='PLAY';
-  } else {
-    if(!toneGain){toneGain=ctx.createGain();toneGain.gain.value=toneVol/100;toneGain.connect(ctx.destination)}
+  }else{
+    if(!toneGain){toneGain=ctx.createGain();toneGain.connect(ctx.destination);}
+    toneGain.gain.setTargetAtTime(volToGain(toneVol),ctx.currentTime,0.02);
     toneOsc=ctx.createOscillator();
     toneOsc.type=WAVEFORMS[toneWave];
     toneOsc.frequency.setValueAtTime(toneFreq,ctx.currentTime);
-    toneOsc.connect(toneGain);
-    toneOsc.start();
-    tonePlaying=true;
-    document.getElementById('tonePlayBtn').style.background='#f44';
-    document.getElementById('tonePlayBtn').style.boxShadow='0 0 30px #f446';
-    document.getElementById('tonePlayIcon').outerHTML='<div id="tonePlayIcon" style="width:22px;height:22px;background:#fff;border-radius:3px"></div>';
+    toneOsc.connect(toneGain);toneOsc.start();tonePlaying=true;
+    document.getElementById('tonePlayBtn').classList.add('playing');
+    document.getElementById('toneIcPlay').style.display='none';
+    document.getElementById('toneIcStop').style.display='';
     document.getElementById('tonePlayLabel').textContent='STOP';
   }
 }
 
-/* ══════════════════════════════════════
-   NOISE MODULE
-   ══════════════════════════════════════ */
+/* ═══════ NOISE — Custom touch sliders ═══════ */
+let noiseNodes=[],noiseMasterGain=null,noisePlaying=false;
+let noiseSliders=[50,50,50,50,50,50,50,50,50,50],noiseVol=60,activePreset='White';
+let eqDragging=-1;
+
 function initEqSliders(){
   const c=document.getElementById('eqSliders');
   BANDS.forEach((_,i)=>{
-    const wrap=document.createElement('div');
-    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;flex:1';
-    const sh=document.createElement('div');
-    sh.style.cssText='height:150px;display:flex;align-items:center;justify-content:center';
-    const sl=document.createElement('input');
-    sl.type='range';sl.min=0;sl.max=100;sl.value=noiseSliders[i];
-    sl.className='vslider';
-    sl.oninput=function(){updateNoiseSlider(i,Number(this.value))};
-    sl.id='ns'+i;
-    sh.appendChild(sl);
-    wrap.appendChild(sh);
-    const lb=document.createElement('span');
-    lb.style.cssText='font-size:9px;color:#fff6;margin-top:4px;font-family:"DM Mono",monospace';
-    lb.textContent=BAND_LABELS[i];
-    wrap.appendChild(lb);
-    c.appendChild(wrap);
+    const col=document.createElement('div');col.className='eq-col';
+    const track=document.createElement('div');track.className='eq-track';track.dataset.index=i;
+    const fill=document.createElement('div');fill.className='eq-fill';fill.id='eqFill'+i;
+    const thumb=document.createElement('div');thumb.className='eq-thumb';thumb.id='eqThumb'+i;
+    track.appendChild(fill);track.appendChild(thumb);col.appendChild(track);
+    const lb=document.createElement('span');lb.className='eq-label';lb.textContent=BAND_LABELS[i];
+    col.appendChild(lb);c.appendChild(col);
+    setEqVisual(i,noiseSliders[i]);
+    track.addEventListener('touchstart',eqTouchStart,{passive:false});
+    track.addEventListener('touchmove',eqTouchMove,{passive:false});
+    track.addEventListener('touchend',eqTouchEnd,{passive:false});
+    track.addEventListener('mousedown',eqMouseDown);
   });
+  document.addEventListener('mousemove',eqMouseMove);
+  document.addEventListener('mouseup',eqMouseUp);
 }
+function eqValFromY(track,clientY){
+  const r=track.getBoundingClientRect();
+  return Math.round((1-Math.max(0,Math.min(1,(clientY-r.top)/r.height)))*100);
+}
+function setEqVisual(i,v){
+  document.getElementById('eqFill'+i).style.height=v+'%';
+  document.getElementById('eqThumb'+i).style.top=(100-v)+'%';
+}
+function updateEq(i,v){
+  noiseSliders[i]=v;setEqVisual(i,v);activePreset=null;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  if(noiseNodes[i]&&audioCtx)noiseNodes[i].gain.gain.setTargetAtTime(volToGain(v),audioCtx.currentTime,0.03);
+}
+function eqTouchStart(e){e.preventDefault();const i=parseInt(e.currentTarget.dataset.index);updateEq(i,eqValFromY(e.currentTarget,e.touches[0].clientY));eqDragging=i;}
+function eqTouchMove(e){e.preventDefault();if(eqDragging<0)return;const t=document.querySelector('.eq-track[data-index="'+eqDragging+'"]');updateEq(eqDragging,eqValFromY(t,e.touches[0].clientY));}
+function eqTouchEnd(e){e.preventDefault();eqDragging=-1;}
+function eqMouseDown(e){const i=parseInt(e.currentTarget.dataset.index);updateEq(i,eqValFromY(e.currentTarget,e.clientY));eqDragging=i;}
+function eqMouseMove(e){if(eqDragging<0)return;const t=document.querySelector('.eq-track[data-index="'+eqDragging+'"]');updateEq(eqDragging,eqValFromY(t,e.clientY));}
+function eqMouseUp(){eqDragging=-1;}
+
 function initPresets(){
   const names=Object.keys(PRESETS);
-  const color=names.slice(0,6), freq=names.slice(6,14), spec=names.slice(14);
-  const mkBtn=(n,parent)=>{
-    const b=document.createElement('button');
-    b.className='preset-btn'+(n==='White'?' active':'');
-    b.id='pr_'+n.replace(/[^a-zA-Z0-9]/g,'_');
-    b.textContent=n;
-    b.onclick=()=>applyPreset(n);
-    parent.appendChild(b);
-  };
-  color.forEach(n=>mkBtn(n,document.getElementById('colorPresets')));
-  freq.forEach(n=>mkBtn(n,document.getElementById('freqPresets')));
-  spec.forEach(n=>mkBtn(n,document.getElementById('specialPresets')));
-}
-function updateNoiseSlider(i,v){
-  noiseSliders[i]=v;
-  activePreset=null;
-  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-  if(noiseNodes[i]) noiseNodes[i].gain.gain.setTargetAtTime(v/100,audioCtx.currentTime,0.03);
+  const color=names.slice(0,6),freq=names.slice(6,14),spec=names.slice(14);
+  const mk=(n,p)=>{const b=document.createElement('button');b.className='preset-btn'+(n==='White'?' active':'');b.id='pr_'+n.replace(/[^a-zA-Z0-9]/g,'_');b.textContent=n;b.onclick=()=>applyPreset(n);p.appendChild(b);};
+  color.forEach(n=>mk(n,document.getElementById('colorPresets')));
+  freq.forEach(n=>mk(n,document.getElementById('freqPresets')));
+  spec.forEach(n=>mk(n,document.getElementById('specialPresets')));
 }
 function applyPreset(name){
-  const p=PRESETS[name];
-  activePreset=name;
-  p.forEach((v,i)=>{
-    noiseSliders[i]=v;
-    document.getElementById('ns'+i).value=v;
-    if(noiseNodes[i]) noiseNodes[i].gain.gain.setTargetAtTime(v/100,audioCtx.currentTime,0.05);
-  });
+  const p=PRESETS[name];activePreset=name;
+  p.forEach((v,i)=>{noiseSliders[i]=v;setEqVisual(i,v);if(noiseNodes[i]&&audioCtx)noiseNodes[i].gain.gain.setTargetAtTime(volToGain(v),audioCtx.currentTime,0.05);});
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-  const el=document.getElementById('pr_'+name.replace(/[^a-zA-Z0-9]/g,'_'));
-  if(el) el.classList.add('active');
+  const el=document.getElementById('pr_'+name.replace(/[^a-zA-Z0-9]/g,'_'));if(el)el.classList.add('active');
 }
 function onNoiseVol(v){
-  noiseVol=Number(v);
-  document.getElementById('noiseVolLabel').textContent='MASTER — '+noiseVol+'%';
-  if(noiseMasterGain) noiseMasterGain.gain.setTargetAtTime(noiseVol/100,audioCtx.currentTime,0.02);
+  noiseVol=Number(v);document.getElementById('noiseVolLabel').textContent='MASTER — '+noiseVol+'%';
+  if(noiseMasterGain&&audioCtx)noiseMasterGain.gain.setTargetAtTime(volToGain(noiseVol),audioCtx.currentTime,0.02);
 }
 function toggleNoise(){
   const ctx=getCtx();
   if(noisePlaying){
-    noiseNodes.forEach(n=>{try{n.src.stop()}catch(e){}});
-    noiseNodes=[];
-    noisePlaying=false;
-    document.getElementById('noisePlayBtn').style.background='#f0a';
-    document.getElementById('noisePlayBtn').style.boxShadow='0 0 30px #f0a6';
-    document.getElementById('noisePlayIcon').outerHTML='<div id="noisePlayIcon" style="width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:22px solid #fff;margin-left:4px"></div>';
+    noiseNodes.forEach(n=>{try{n.src.stop();}catch(e){}});noiseNodes=[];noisePlaying=false;
+    document.getElementById('noisePlayBtn').classList.remove('playing');
+    document.getElementById('noiseIcPlay').style.display='';document.getElementById('noiseIcStop').style.display='none';
     document.getElementById('noisePlayLabel').textContent='PLAY';
-  } else {
-    if(!noiseMasterGain){noiseMasterGain=ctx.createGain();noiseMasterGain.gain.value=noiseVol/100;noiseMasterGain.connect(ctx.destination)}
+  }else{
+    if(!noiseMasterGain){noiseMasterGain=ctx.createGain();noiseMasterGain.connect(ctx.destination);}
+    noiseMasterGain.gain.setTargetAtTime(volToGain(noiseVol),ctx.currentTime,0.02);
     const buf=makeNoiseBuffer(ctx);
     noiseNodes=BANDS.map((fc,i)=>{
       const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
       const flt=ctx.createBiquadFilter();flt.type='bandpass';flt.frequency.value=fc;flt.Q.value=fc<100?0.5:1.2;
-      const g=ctx.createGain();g.gain.value=noiseSliders[i]/100;
+      const g=ctx.createGain();g.gain.value=volToGain(noiseSliders[i]);
       src.connect(flt);flt.connect(g);g.connect(noiseMasterGain);src.start();
       return{src,filter:flt,gain:g};
     });
     noisePlaying=true;
-    document.getElementById('noisePlayBtn').style.background='#f44';
-    document.getElementById('noisePlayBtn').style.boxShadow='0 0 30px #f446';
-    document.getElementById('noisePlayIcon').outerHTML='<div id="noisePlayIcon" style="width:20px;height:20px;background:#fff;border-radius:3px"></div>';
+    document.getElementById('noisePlayBtn').classList.add('playing');
+    document.getElementById('noiseIcPlay').style.display='none';document.getElementById('noiseIcStop').style.display='';
     document.getElementById('noisePlayLabel').textContent='STOP';
   }
 }
 
-/* ══════════════════════════════════════
-   CALL MODULE
-   ══════════════════════════════════════ */
-const roomInput=document.getElementById('roomInput');
-roomInput.addEventListener('input',()=>{
+/* ═══════ CALL — WebRTC Mesh ═══════ */
+let socket=null,callStream=null,peers={},remoteAudios={};
+let micOn=true,speakerOn=true,speakerphoneOn=true,inRoom=false;
+let localAnalyser=null,meterRAF=null;
+const ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}];
+
+function onRoomInput(){
   const b=document.getElementById('enterBtn');
-  if(roomInput.value.trim()){b.style.background='#4f8';b.style.color='#111'}
-  else{b.style.background='#fff2';b.style.color='#fff4'}
-});
+  document.getElementById('roomInput').value.trim()?b.classList.add('ready'):b.classList.remove('ready');
+}
 
 async function joinRoom(){
-  const name=roomInput.value.trim();
-  if(!name) return;
+  const name=document.getElementById('roomInput').value.trim();
+  if(!name)return;
   document.getElementById('callError').style.display='none';
-  try{
-    callStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    inRoom=true; micOn=true; speakerOn=true; speakerphoneOn=true;
-    document.getElementById('callLobby').style.display='none';
-    document.getElementById('callRoom').style.display='flex';
-    document.getElementById('roomLabel').textContent=name;
-    renderUsers(['You']);
-    // Connect to signaling server if available
-    if(typeof io!=='undefined'){
-      socket=io();
-      socket.emit('join',{room:name});
-      socket.on('user-joined',d=>addUser(d.id));
-      socket.on('user-left',d=>removeUser(d.id));
-      socket.on('signal',handleSignal);
-    }
-  }catch(e){
-    document.getElementById('callError').textContent='Microphone access denied. Please allow mic permissions.';
-    document.getElementById('callError').style.display='block';
+  try{callStream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){
+    document.getElementById('callError').textContent='Microphone access denied. Allow mic and try again.';
+    document.getElementById('callError').style.display='block';return;
+  }
+  const ctx=getCtx();
+  localAnalyser=ctx.createAnalyser();localAnalyser.fftSize=256;
+  ctx.createMediaStreamSource(callStream).connect(localAnalyser);
+  startMeter();
+  inRoom=true;micOn=true;speakerOn=true;speakerphoneOn=true;
+  document.getElementById('callLobby').style.display='none';
+  document.getElementById('callRoom').style.display='flex';
+  document.getElementById('roomLabel').textContent=name;
+  updateUserList();
+
+  if(typeof io!=='undefined'){
+    socket=io({transports:['websocket','polling']});
+    socket.on('connect',()=>socket.emit('join',{room:name}));
+    socket.on('room-users',d=>{d.users.forEach(id=>createPeer(id,true));updateUserList();});
+    socket.on('user-joined',d=>{createPeer(d.id,false);updateUserList();});
+    socket.on('user-left',d=>{removePeer(d.id);updateUserList();});
+    socket.on('room-count',d=>{document.getElementById('userCount').textContent=d.count;});
+    socket.on('signal',async d=>{
+      const{from,signal}=d;
+      if(!peers[from])createPeer(from,false);
+      const pc=peers[from].pc;
+      try{
+        if(signal.type==='offer'){
+          await pc.setRemoteDescription(new RTCSessionDescription(signal));
+          const ans=await pc.createAnswer();await pc.setLocalDescription(ans);
+          socket.emit('signal',{to:from,signal:pc.localDescription});
+        }else if(signal.type==='answer'){
+          await pc.setRemoteDescription(new RTCSessionDescription(signal));
+        }else if(signal.candidate){
+          await pc.addIceCandidate(new RTCIceCandidate(signal));
+        }
+      }catch(e){console.warn('Signal err:',e);}
+    });
+    socket.on('disconnect',()=>{Object.keys(peers).forEach(id=>removePeer(id));updateUserList();});
   }
 }
+
+function createPeer(rid,initiator){
+  if(peers[rid])return;
+  const pc=new RTCPeerConnection({iceServers:ICE});
+  if(callStream)callStream.getTracks().forEach(t=>pc.addTrack(t,callStream));
+  pc.onicecandidate=e=>{if(e.candidate&&socket)socket.emit('signal',{to:rid,signal:e.candidate});};
+  pc.ontrack=e=>{
+    if(e.streams&&e.streams[0]){
+      const a=new Audio();a.srcObject=e.streams[0];a.autoplay=true;a.volume=speakerOn?1:0;
+      remoteAudios[rid]=a;
+      try{getCtx().createMediaStreamSource(e.streams[0]).connect(localAnalyser);}catch(err){}
+    }
+  };
+  pc.onconnectionstatechange=()=>{
+    if(pc.connectionState==='disconnected'||pc.connectionState==='failed'){removePeer(rid);updateUserList();}
+  };
+  peers[rid]={pc};
+  if(initiator){
+    pc.createOffer().then(o=>{pc.setLocalDescription(o);if(socket)socket.emit('signal',{to:rid,signal:o});}).catch(e=>console.warn(e));
+  }
+}
+function removePeer(id){
+  if(peers[id]){peers[id].pc.close();delete peers[id];}
+  if(remoteAudios[id]){remoteAudios[id].srcObject=null;delete remoteAudios[id];}
+}
+function updateUserList(){
+  const list=document.getElementById('userList');list.innerHTML='';
+  list.innerHTML+='<div class="user-card"><div class="user-avatar">Y</div><span class="user-name">You</span><div class="user-dot" style="background:'+(micOn?'#3a3':'#c44')+'"></div></div>';
+  let idx=0;
+  Object.keys(peers).forEach(id=>{idx++;
+    list.innerHTML+='<div class="user-card"><div class="user-avatar">'+idx+'</div><span class="user-name">Peer '+idx+'</span><div class="user-dot" style="background:#3a3"></div></div>';
+  });
+  document.getElementById('userCount').textContent=1+Object.keys(peers).length;
+}
+function startMeter(){
+  if(!localAnalyser)return;
+  const d=new Uint8Array(localAnalyser.frequencyBinCount);
+  function tick(){
+    if(!inRoom)return;
+    localAnalyser.getByteFrequencyData(d);
+    let s=0;for(let i=0;i<d.length;i++)s+=d[i];
+    document.getElementById('loudnessFill').style.width=Math.min(100,(s/d.length/128)*100)+'%';
+    meterRAF=requestAnimationFrame(tick);
+  }tick();
+}
 function exitRoom(){
-  if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null}
-  if(socket){socket.emit('leave');socket.disconnect();socket=null}
-  Object.values(peers).forEach(pc=>pc.close());peers={};
-  inRoom=false;
+  if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null;}
+  if(socket){socket.emit('leave');socket.disconnect();socket=null;}
+  Object.keys(peers).forEach(id=>removePeer(id));peers={};remoteAudios={};
+  if(meterRAF)cancelAnimationFrame(meterRAF);localAnalyser=null;inRoom=false;
+  document.getElementById('loudnessFill').style.width='0%';
   document.getElementById('callRoom').style.display='none';
   document.getElementById('callLobby').style.display='flex';
-  roomInput.value='';
-  document.getElementById('enterBtn').style.background='#fff2';
-  document.getElementById('enterBtn').style.color='#fff4';
-}
-function renderUsers(list){
-  const c=document.getElementById('userList');c.innerHTML='';
-  list.forEach(u=>{
-    c.innerHTML+=`<div style="padding:12px 16px;background:#fff1;border-radius:10px;display:flex;align-items:center;gap:10px">
-      <div style="width:32px;height:32px;border-radius:50%;background:#4f833;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4f8;font-weight:700">${u[0]}</div>
-      <span style="color:#fffc;font-size:14px">${u}</span>
-      <div style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#4f8"></div></div>`;
-  });
+  document.getElementById('roomInput').value='';document.getElementById('enterBtn').classList.remove('ready');
 }
 function toggleCallMic(){
-  micOn=!micOn;
-  if(callStream) callStream.getAudioTracks().forEach(t=>{t.enabled=micOn});
-  const c=document.getElementById('micCircle');
-  c.style.background=micOn?'#4f822':'#fff1';
-  c.style.borderColor=micOn?'#4f8':'#fff3';
-  c.style.color=micOn?'#4f8':'#f66';
+  micOn=!micOn;if(callStream)callStream.getAudioTracks().forEach(t=>{t.enabled=micOn;});
+  const c=document.getElementById('micCircle');c.className='call-circle'+(micOn?' green':'');
   document.getElementById('micLabel').textContent=micOn?'MIC ON':'MUTED';
-  document.getElementById('micLabel').style.color=micOn?'':'#f66';
+  document.getElementById('micLabel').style.color=micOn?'':'#c44';updateUserList();
 }
 function toggleCallAudio(){
-  speakerOn=!speakerOn;
-  const c=document.getElementById('audioCircle');
-  c.style.background=speakerOn?'#4f822':'#fff1';
-  c.style.borderColor=speakerOn?'#4f8':'#fff3';
-  c.style.color=speakerOn?'#4f8':'#f66';
+  speakerOn=!speakerOn;Object.values(remoteAudios).forEach(a=>{a.volume=speakerOn?1:0;});
+  document.getElementById('audioCircle').className='call-circle'+(speakerOn?' on':'');
   document.getElementById('audioLabel').textContent=speakerOn?'AUDIO':'MUTED';
-  document.getElementById('audioLabel').style.color=speakerOn?'':'#f66';
+  document.getElementById('audioLabel').style.color=speakerOn?'':'#c44';
 }
 function toggleSpeakerphone(){
   speakerphoneOn=!speakerphoneOn;
-  const c=document.getElementById('spkrphoneCircle');
-  c.style.background=speakerphoneOn?'#4f822':'#fff1';
-  c.style.borderColor=speakerphoneOn?'#4f8':'#fff3';
-  c.style.color=speakerphoneOn?'#4f8':'#fff6';
+  document.getElementById('spkrCircle').className='call-circle'+(speakerphoneOn?' on':'');
 }
-function addUser(id){/* extend user list */}
-function removeUser(id){/* remove from user list */}
-function handleSignal(data){/* WebRTC signaling */}
 
-/* ══════════════════════════════════════
-   INIT
-   ══════════════════════════════════════ */
-initWaveButtons();
-initEqSliders();
-initPresets();
-updateFreqDisplay();
+/* ═══════ INIT ═══════ */
+initWaveButtons();initEqSliders();initPresets();updateFreqDisplay();
 </script>
 </body>
 </html>
