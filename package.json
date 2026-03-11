@@ -1,7 +1,7 @@
 {
-  "name": "soundlab",
-  "version": "1.0.0",
-  "description": "SoundLab - Tone Generator, Noise Generator & Group Call",
+  "name": "phonelab",
+  "version": "2.0.0",
+  "description": "PHONELAB - Tone Generator, Noise Generator & Group Call",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
