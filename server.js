@@ -6,37 +6,40 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*' }
+  cors: { origin: '*' },
+  transports: ['websocket', 'polling']
 });
 
-// Serve the static frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Track rooms and users
 const rooms = {};
 
+function broadcastCount(room) {
+  const count = rooms[room] ? rooms[room].length : 0;
+  io.to(room).emit('room-count', { count });
+}
+
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  console.log(`+ ${socket.id}`);
   let currentRoom = null;
 
   socket.on('join', ({ room }) => {
     currentRoom = room;
     socket.join(room);
-
     if (!rooms[room]) rooms[room] = [];
     rooms[room].push(socket.id);
 
-    // Tell existing users about the new user
-    socket.to(room).emit('user-joined', { id: socket.id });
-
-    // Tell the new user about existing users
+    // Tell new user about existing peers
     const others = rooms[room].filter(id => id !== socket.id);
     socket.emit('room-users', { users: others });
 
-    console.log(`${socket.id} joined room: ${room} (${rooms[room].length} users)`);
+    // Tell existing peers about new user
+    socket.to(room).emit('user-joined', { id: socket.id });
+
+    broadcastCount(room);
+    console.log(`  ${socket.id} → ${room} (${rooms[room].length} users)`);
   });
 
-  // WebRTC signaling relay
   socket.on('signal', ({ to, signal }) => {
     io.to(to).emit('signal', { from: socket.id, signal });
   });
@@ -46,8 +49,9 @@ io.on('connection', (socket) => {
       rooms[currentRoom] = rooms[currentRoom].filter(id => id !== socket.id);
       socket.to(currentRoom).emit('user-left', { id: socket.id });
       if (rooms[currentRoom].length === 0) delete rooms[currentRoom];
+      else broadcastCount(currentRoom);
       socket.leave(currentRoom);
-      console.log(`${socket.id} left room: ${currentRoom}`);
+      console.log(`  ${socket.id} left ${currentRoom}`);
       currentRoom = null;
     }
   });
@@ -57,13 +61,13 @@ io.on('connection', (socket) => {
       rooms[currentRoom] = rooms[currentRoom].filter(id => id !== socket.id);
       socket.to(currentRoom).emit('user-left', { id: socket.id });
       if (rooms[currentRoom].length === 0) delete rooms[currentRoom];
+      else broadcastCount(currentRoom);
     }
-    console.log(`User disconnected: ${socket.id}`);
+    console.log(`- ${socket.id}`);
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`SoundLab server running on port ${PORT}`);
-  console.log(`Open http://localhost:${PORT} in your browser`);
+  console.log(`PHONELAB running on port ${PORT}`);
 });
