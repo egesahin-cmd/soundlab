@@ -95,6 +95,18 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   <div style="display:flex;gap:5px"><button class="bsm" onclick="toneFreq=Math.max(1,toneFreq/2);syncTone()">÷2</button><button class="bsm" onclick="toneFreq=Math.max(1,toneFreq-1);syncTone()">−1</button><button class="bsm" onclick="toneFreq=Math.min(20000,toneFreq+1);syncTone()">+1</button><button class="bsm" onclick="toneFreq=Math.min(20000,toneFreq*2);syncTone()">×2</button></div>
   <div class="rr"><div class="lbl-row lbl"><span>1 Hz</span><span>FREQUENCY</span><span>20 kHz</span></div><input type="range" id="toneFreqR" min="0" max="10000" value="5000" oninput="toneFreq=s2f(+this.value);syncTone(1)"></div>
   <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="toneVolL">VOLUME — 50%</span><span>100%</span></div><input type="range" id="toneVolR" min="0" max="100" value="50" oninput="toneVol=+this.value;syncTone()"></div>
+  <div class="section-toggle" onclick="togSection('tVsSec')">VOLUME SWEEP<span id="tVsSecArrow">▼</span></div>
+  <div class="section-body" id="tVsSec">
+    <button class="bsm" id="tVsOnB" onclick="toggleToneVs()">OFF</button>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center" id="tVsTypes"></div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:18px" id="tVsMinV" onclick="tapNum('tVsMinV',0,100,v=>{tVsMin=v})">0.00</span><span class="vunit">%</span></div>
+      <span style="color:#ccc">→</span>
+      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:18px" id="tVsMaxV" onclick="tapNum('tVsMaxV',0,100,v=>{tVsMax=v})">100.00</span><span class="vunit">%</span></div>
+    </div>
+    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="tVsDurV" onclick="tapNum('tVsDurV',0.001,2000,v=>{tVsDur=v},false,3)">5.000</span><span class="vunit">sec</span></div>
+    <div style="display:flex;gap:5px"><button class="bsm" id="tVsLoopB" onclick="tVsLoop=!tVsLoop;this.textContent=tVsLoop?'LOOP ON':'LOOP OFF';this.classList.toggle('on',tVsLoop)">LOOP OFF</button></div>
+  </div>
   <button class="pbtn" id="tonePB" onclick="toggleTone()"><svg id="tonePI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#1a1a1a"/></svg><svg id="toneSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#f5f2ed"/></svg></button>
   <div class="lbl" id="tonePL">PLAY</div>
 </div>
@@ -105,50 +117,20 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   <!-- FREQ SWEEP SECTION -->
   <div class="swp-section">
-    <div style="display:flex;align-items:center;gap:8px;width:100%">
-      <div class="lbl" style="font-weight:600;letter-spacing:2px">FREQUENCY SWEEP</div>
-      <button class="bsm" id="swpFqOnB" onclick="swpFqOn=!swpFqOn;this.textContent=swpFqOn?'ON':'OFF';this.classList.toggle('on',swpFqOn)" style="height:26px;font-size:10px;padding:0 10px;margin-left:auto">ON</button>
-    </div>
+    <div class="lbl" style="font-weight:600;letter-spacing:2px">FREQUENCY SWEEP</div>
     <div style="display:flex;gap:14px;align-items:center">
-      <div style="text-align:center"><div class="lbl">MIN</div><span class="vnum" style="font-size:22px" id="swpFqMinV" onclick="tapNum('swpFqMinV',1,20000,v=>{swpFqMin=v})">20.00</span><span class="vunit">Hz</span></div>
+      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:22px" id="swpFqMinV" onclick="tapNum('swpFqMinV',1,20000,v=>{swpFqMin=v})">20.00</span><span class="vunit">Hz</span></div>
       <span style="color:#ccc;font-size:16px">→</span>
-      <div style="text-align:center"><div class="lbl">MAX</div><span class="vnum" style="font-size:22px" id="swpFqMaxV" onclick="tapNum('swpFqMaxV',1,20000,v=>{swpFqMax=v})">2000.00</span><span class="vunit">Hz</span></div>
+      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:22px" id="swpFqMaxV" onclick="tapNum('swpFqMaxV',1,20000,v=>{swpFqMax=v})">2000.00</span><span class="vunit">Hz</span></div>
     </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:20px" id="swpFqDurV" onclick="tapNum('swpFqDurV',0.1,2000,v=>{swpFqDur=v})">5.00</span><span class="vunit">sec</span></div>
+    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:20px" id="swpFqDurV" onclick="tapNum('swpFqDurV',0.01,2000,v=>{swpFqDur=v})">5.00</span><span class="vunit">sec</span></div>
     <div class="lbl">TYPE</div>
     <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center" id="swpFqTypes"></div>
     <div style="display:flex;gap:6px">
       <button class="bsm" id="swpFqLoopB" onclick="swpFqLoop=!swpFqLoop;this.textContent=swpFqLoop?'LOOP ON':'LOOP OFF';this.classList.toggle('on',swpFqLoop)" style="font-size:10px;height:28px">LOOP OFF</button>
     </div>
-    <div class="section-toggle" onclick="togSection('swpFqSteps')" style="max-width:100%">STEPS<span id="swpFqStepsArrow">▼</span></div>
-    <div class="section-body" id="swpFqSteps" style="max-width:100%">
-      <div style="text-align:center"><span class="vnum" style="font-size:20px" id="swpFqStepV" onclick="tapNum('swpFqStepV',1,50,v=>{swpFqStepN=Math.round(v)},true)">1</span><span class="vunit">steps (1 = off)</span></div>
-      <div class="rr"><input type="range" min="1" max="50" value="1" oninput="swpFqStepN=+this.value;document.getElementById('swpFqStepV').textContent=swpFqStepN"></div>
-    </div>
-  </div>
-
-  <!-- VOL SWEEP SECTION -->
-  <div class="swp-section">
-    <div style="display:flex;align-items:center;gap:8px;width:100%">
-      <div class="lbl" style="font-weight:600;letter-spacing:2px">VOLUME SWEEP</div>
-      <button class="bsm" id="swpVolOnB" onclick="swpVolOn=!swpVolOn;this.textContent=swpVolOn?'ON':'OFF';this.classList.toggle('on',swpVolOn)" style="height:26px;font-size:10px;padding:0 10px;margin-left:auto">OFF</button>
-    </div>
-    <div style="display:flex;gap:14px;align-items:center">
-      <div style="text-align:center"><div class="lbl">MIN</div><span class="vnum" style="font-size:22px" id="swpVoMinV" onclick="tapNum('swpVoMinV',0,100,v=>{swpVoMin=v})">0.00</span><span class="vunit">%</span></div>
-      <span style="color:#ccc;font-size:16px">→</span>
-      <div style="text-align:center"><div class="lbl">MAX</div><span class="vnum" style="font-size:22px" id="swpVoMaxV" onclick="tapNum('swpVoMaxV',0,100,v=>{swpVoMax=v})">100.00</span><span class="vunit">%</span></div>
-    </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:20px" id="swpVoDurV" onclick="tapNum('swpVoDurV',0.1,2000,v=>{swpVoDur=v})">5.00</span><span class="vunit">sec</span></div>
-    <div class="lbl">TYPE</div>
-    <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center" id="swpVoTypes"></div>
-    <div style="display:flex;gap:6px">
-      <button class="bsm" id="swpVoLoopB" onclick="swpVoLoop=!swpVoLoop;this.textContent=swpVoLoop?'LOOP ON':'LOOP OFF';this.classList.toggle('on',swpVoLoop)" style="font-size:10px;height:28px">LOOP OFF</button>
-    </div>
-    <div class="section-toggle" onclick="togSection('swpVoSteps')" style="max-width:100%">STEPS<span id="swpVoStepsArrow">▼</span></div>
-    <div class="section-body" id="swpVoSteps" style="max-width:100%">
-      <div style="text-align:center"><span class="vnum" style="font-size:20px" id="swpVoStepV" onclick="tapNum('swpVoStepV',1,50,v=>{swpVoStepN=Math.round(v)},true)">1</span><span class="vunit">steps (1 = off)</span></div>
-      <div class="rr"><input type="range" min="1" max="50" value="1" oninput="swpVoStepN=+this.value;document.getElementById('swpVoStepV').textContent=swpVoStepN"></div>
-    </div>
+    <div style="text-align:center"><span class="vnum" style="font-size:20px" id="swpFqStepV" onclick="tapNum('swpFqStepV',1,50,v=>{swpFqStepN=Math.round(v)},true)">1</span><span class="vunit">steps (1 = off)</span></div>
+    <div class="rr"><input type="range" min="1" max="50" value="1" oninput="swpFqStepN=+this.value;document.getElementById('swpFqStepV').textContent=swpFqStepN"></div>
   </div>
 
   <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="swpMVolL">MASTER — 70%</span><span>100%</span></div><input type="range" id="swpMVolR" min="0" max="100" value="70" oninput="swpMVol=+this.value;document.getElementById('swpMVolL').textContent='MASTER — '+swpMVol+'%';if(swpMGn&&AC)swpMGn.gain.setTargetAtTime(v2g(swpMVol),AC.currentTime,.02)"></div>
@@ -172,11 +154,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <button class="bsm" id="burstSwpOn" onclick="burstSwpEnabled=!burstSwpEnabled;this.textContent=burstSwpEnabled?'SWEEP ON':'SWEEP OFF';this.classList.toggle('on',burstSwpEnabled)">SWEEP OFF</button>
     <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center" id="burstSwpTypes"></div>
     <div style="display:flex;gap:12px;align-items:center">
-      <div style="text-align:center"><div class="lbl">MIN</div><span class="vnum" style="font-size:18px" id="bswpMinV" onclick="tapNum('bswpMinV',1,10000,v=>{bswpMin=v})">50</span><span class="vunit">ms</span></div>
+      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:18px" id="bswpMinV" onclick="tapNum('bswpMinV',1,10000,v=>{bswpMin=v})">50</span><span class="vunit">ms</span></div>
       <span style="color:#ccc">→</span>
-      <div style="text-align:center"><div class="lbl">MAX</div><span class="vnum" style="font-size:18px" id="bswpMaxV" onclick="tapNum('bswpMaxV',1,10000,v=>{bswpMax=v})">500</span><span class="vunit">ms</span></div>
+      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:18px" id="bswpMaxV" onclick="tapNum('bswpMaxV',1,10000,v=>{bswpMax=v})">500</span><span class="vunit">ms</span></div>
     </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="bswpDurV" onclick="tapNum('bswpDurV',0.1,2000,v=>{bswpDur=v})">5.00</span><span class="vunit">sec</span></div>
+    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="bswpDurV" onclick="tapNum('bswpDurV',0.01,2000,v=>{bswpDur=v})">5.00</span><span class="vunit">sec</span></div>
     <div style="display:flex;gap:5px"><button class="bsm" id="bswpLoopB" onclick="bswpLoop=!bswpLoop;this.textContent=bswpLoop?'LOOP ON':'LOOP OFF';this.classList.toggle('on',bswpLoop)">LOOP OFF</button></div>
   </div>
   <button class="pbtn" id="burstPB" onclick="toggleBurst()"><svg id="burstPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#1a1a1a"/></svg><svg id="burstSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#f5f2ed"/></svg></button>
@@ -195,6 +177,18 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
   <div id="eqSliders" style="display:flex;gap:2px;justify-content:center;width:100%;max-width:360px;padding:4px 0"></div>
   <div class="rr" style="max-width:360px"><div class="lbl-row lbl"><span>0%</span><span id="nVolL">MASTER — 60%</span><span>100%</span></div><input type="range" id="nVolR" min="0" max="100" value="60" oninput="nVol=+this.value;document.getElementById('nVolL').textContent='MASTER — '+nVol+'%';if(nMGain&&AC)nMGain.gain.setTargetAtTime(v2g(nVol),AC.currentTime,.02)"></div>
+  <div class="section-toggle" onclick="togSection('nVsSec')">VOLUME SWEEP<span id="nVsSecArrow">▼</span></div>
+  <div class="section-body" id="nVsSec">
+    <button class="bsm" id="nVsOnB" onclick="toggleNoiseVs()">OFF</button>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center" id="nVsTypes"></div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:18px" id="nVsMinV" onclick="tapNum('nVsMinV',0,100,v=>{nVsMin=v})">0.00</span><span class="vunit">%</span></div>
+      <span style="color:#ccc">→</span>
+      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:18px" id="nVsMaxV" onclick="tapNum('nVsMaxV',0,100,v=>{nVsMax=v})">100.00</span><span class="vunit">%</span></div>
+    </div>
+    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="nVsDurV" onclick="tapNum('nVsDurV',0.001,2000,v=>{nVsDur=v},false,3)">5.000</span><span class="vunit">sec</span></div>
+    <div style="display:flex;gap:5px"><button class="bsm" id="nVsLoopB" onclick="nVsLoop=!nVsLoop;this.textContent=nVsLoop?'LOOP ON':'LOOP OFF';this.classList.toggle('on',nVsLoop)">LOOP OFF</button></div>
+  </div>
   <button class="pbtn" id="nPB" onclick="toggleNoise()"><svg id="nPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#1a1a1a"/></svg><svg id="nSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#f5f2ed"/></svg></button>
   <div class="lbl" id="nPL">PLAY</div>
 </div>
@@ -247,14 +241,15 @@ function mkNB(ctx){const s=ctx.sampleRate*4,b=ctx.createBuffer(1,s,ctx.sampleRat
 function spdS2V(v){return Math.round(Math.exp(v/10000*Math.log(10000))*100)/100;}
 function spdV2S(v){return Math.round(Math.log(Math.max(1,v))/Math.log(10000)*10000);}
 function r2(v){return Math.round(v*100)/100;}
-function tapNum(id,min,max,cb,isInt){
+function tapNum(id,min,max,cb,isInt,dec){
+  if(dec===undefined)dec=2;
   const el=document.getElementById(id);if(!el)return;
   const old=el.textContent;
   const inp=document.createElement('input');inp.type='number';inp.className='vedit';inp.value=old;inp.min=min;inp.max=max;
-  if(!isInt)inp.step='0.01';
+  if(!isInt)inp.step=Math.pow(10,-dec).toString();
   inp.style.width=Math.max(60,old.length*16)+'px';
   el.replaceWith(inp);inp.focus();inp.select();
-  function done(){let v=parseFloat(inp.value);if(isNaN(v))v=parseFloat(old);v=Math.max(min,Math.min(max,v));if(isInt)v=Math.round(v);else v=r2(v);const sp=document.createElement('span');sp.className=el.className;sp.id=id;sp.textContent=isInt?v:v.toFixed(2);sp.onclick=()=>tapNum(id,min,max,cb,isInt);inp.replaceWith(sp);cb(v);}
+  function done(){let v=parseFloat(inp.value);if(isNaN(v))v=parseFloat(old);v=Math.max(min,Math.min(max,v));if(isInt)v=Math.round(v);else v=Math.round(v*Math.pow(10,dec))/Math.pow(10,dec);const sp=document.createElement('span');sp.className=el.className;sp.id=id;sp.textContent=isInt?v:v.toFixed(dec);sp.onclick=()=>tapNum(id,min,max,cb,isInt,dec);inp.replaceWith(sp);cb(v);}
   inp.onkeydown=e=>{if(e.key==='Enter')done();if(e.key==='Escape'){inp.value=old;done();}};inp.onblur=done;
 }
 function togSection(id){const b=document.getElementById(id);const o=b.classList.toggle('open');document.getElementById(id+'Arrow').textContent=o?'▲':'▼';}
@@ -266,20 +261,40 @@ function switchTab(t){document.querySelectorAll('.tab').forEach((el,i)=>el.class
 
 /* ═══════ TONE ═══════ */
 const WF=['sine','sawtooth','square','triangle'],WI=['∿','⩘','⊓','△'],WN=['SINE','SAW','SQR','TRI'];
-let toneOsc=null,toneGn=null,toneOn=false,toneFreq=440,toneVol=50,toneWv=0;
+let toneOsc=null,toneGn=null,tVsGn=null,toneOn=false,toneFreq=440,toneVol=50,toneWv=0;
+let tVsOn=false,tVsMin=0,tVsMax=100,tVsDur=5,tVsType='linear',tVsLoop=false;
+let tVsPlaying=false,tVsFwd=true,tVsStart=0,tVsRAF=null;
 function initTW(){const c=document.getElementById('toneWaves');WF.forEach((_,i)=>{const b=document.createElement('button');b.className='wbtn'+(i===0?' on':'');b.innerHTML='<span style="font-size:16px">'+WI[i]+'</span><span>'+WN[i]+'</span>';b.onclick=()=>{toneWv=i;document.querySelectorAll('#toneWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===i));if(toneOsc)toneOsc.type=WF[i];};c.appendChild(b);});}
 function syncTone(ns){toneFreq=r2(Math.max(1,Math.min(20000,toneFreq)));document.getElementById('toneFreqV').textContent=toneFreq.toFixed(2);if(!ns)document.getElementById('toneFreqR').value=f2s(toneFreq);document.getElementById('toneVolL').textContent='VOLUME — '+toneVol+'%';if(toneOsc&&AC)toneOsc.frequency.setTargetAtTime(toneFreq,AC.currentTime,.008);if(toneGn&&AC)toneGn.gain.setTargetAtTime(v2g(toneVol),AC.currentTime,.02);}
-function toggleTone(){const c=getAC();if(toneOn){if(toneOsc){toneOsc.stop();toneOsc=null;}toneOn=false;}else{if(!toneGn){toneGn=c.createGain();toneGn.connect(c.destination);}toneGn.gain.setTargetAtTime(v2g(toneVol),c.currentTime,.02);toneOsc=c.createOscillator();toneOsc.type=WF[toneWv];toneOsc.frequency.setValueAtTime(toneFreq,c.currentTime);toneOsc.connect(toneGn);toneOsc.start();toneOn=true;}setPB('tone',toneOn);}
+function toggleTone(){const c=getAC();if(toneOn){if(toneOsc){toneOsc.stop();toneOsc=null;}stopTVs();toneOn=false;}else{if(!toneGn){toneGn=c.createGain();toneGn.connect(c.destination);}if(!tVsGn){tVsGn=c.createGain();tVsGn.connect(toneGn);}tVsGn.gain.value=1;toneGn.gain.setTargetAtTime(v2g(toneVol),c.currentTime,.02);toneOsc=c.createOscillator();toneOsc.type=WF[toneWv];toneOsc.frequency.setValueAtTime(toneFreq,c.currentTime);toneOsc.connect(tVsGn);toneOsc.start();toneOn=true;if(tVsOn)startTVs();}setPB('tone',toneOn);}
+function toggleToneVs(){
+  tVsOn=!tVsOn;
+  const btn=document.getElementById('tVsOnB');
+  btn.textContent=tVsOn?'ON':'OFF';btn.classList.toggle('on',tVsOn);
+  if(tVsOn&&toneOn)startTVs();
+  else if(!tVsOn)stopTVs();
+}
+function startTVs(){
+  if(tVsPlaying)return;tVsPlaying=true;tVsFwd=true;tVsStart=performance.now();
+  (function tick(){if(!tVsPlaying)return;const now=performance.now();let t=(now-tVsStart)/1000/tVsDur;
+    if(t>=1){if(tVsLoop){tVsFwd=!tVsFwd;tVsStart=now;t=0;}else{tVsPlaying=false;if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);return;}}
+    if(!tVsFwd)t=1-t;
+    const vl=Math.max(0,Math.min(100,sweepVal(tVsType,t,tVsMin,tVsMax)));
+    if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(v2g(vl),AC.currentTime,.005);
+    tVsRAF=requestAnimationFrame(tick);})();
+}
+function stopTVs(){if(tVsRAF)cancelAnimationFrame(tVsRAF);tVsPlaying=false;if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);}
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
 const STYPES=['linear','log','wobble','dunk','meandering'];
+const VSTYPES=['linear','log','meandering'];
+function initVsTypes(containerId,active,cb){const c=document.getElementById(containerId);VSTYPES.forEach(t=>{const b=document.createElement('button');b.className='preset'+(t===active?' on':'');b.textContent=t.toUpperCase();b.onclick=()=>{cb(t);c.querySelectorAll('.preset').forEach(x=>x.classList.toggle('on',x.textContent===t.toUpperCase()));};c.appendChild(b);});}
 let swpWv=0,swpMVol=70;
 // Freq sweep params
-let swpFqOn=true,swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqLoop=false,swpFqStepN=1;
+let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqLoop=false,swpFqStepN=1;
 // Vol sweep params
-let swpVolOn=false,swpVoMin=0,swpVoMax=100,swpVoDur=5,swpVoType='linear',swpVoLoop=false,swpVoStepN=1;
 let swpPlaying=false,swpOsc=null,swpSigGn=null,swpMGn=null,swpRAF=null,swpStart=0;
-let swpFqFwd=true,swpVoFwd=true,swpFqStart=0,swpVoStart=0;
+let swpFqFwd=true,swpFqStart=0;
 
 function initSwpW(){const c=document.getElementById('swpWaves');WF.forEach((_,i)=>{const b=document.createElement('button');b.className='wbtn'+(i===0?' on':'');b.innerHTML='<span style="font-size:16px">'+WI[i]+'</span><span>'+WN[i]+'</span>';b.onclick=()=>{swpWv=i;document.querySelectorAll('#swpWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===i));if(swpOsc)swpOsc.type=WF[i];};c.appendChild(b);});}
 function initSwpTypes(containerId,active,cb){const c=document.getElementById(containerId);STYPES.forEach(t=>{const b=document.createElement('button');b.className='preset'+(t===active?' on':'');b.textContent=t.toUpperCase();b.onclick=()=>{cb(t);c.querySelectorAll('.preset').forEach(x=>x.classList.toggle('on',x.textContent===t.toUpperCase()));};c.appendChild(b);});}
@@ -297,19 +312,18 @@ function toggleSweep(){
   if(swpPlaying){if(swpOsc){swpOsc.stop();swpOsc=null;}if(swpRAF)cancelAnimationFrame(swpRAF);swpPlaying=false;setPB('swp',false);return;}
   if(!swpMGn){swpMGn=c.createGain();swpMGn.connect(c.destination);}
   swpMGn.gain.setTargetAtTime(v2g(swpMVol),c.currentTime,.02);
-  swpSigGn=c.createGain();swpSigGn.gain.value=swpVolOn?v2g(swpVoMin):1;
+  swpSigGn=c.createGain();swpSigGn.gain.value=1;
   swpSigGn.connect(swpMGn);
   swpOsc=c.createOscillator();swpOsc.type=WF[swpWv];
-  const startF=swpFqOn?swpFqMin:440;
+  const startF=swpFqMin;
   swpOsc.frequency.setValueAtTime(startF,c.currentTime);
   swpOsc.connect(swpSigGn);swpOsc.start();
-  swpPlaying=true;const now=performance.now();swpFqStart=now;swpVoStart=now;swpFqFwd=true;swpVoFwd=true;
+  swpPlaying=true;const now=performance.now();swpFqStart=now;swpFqFwd=true;
   setPB('swp',true);
   function tick(){
     if(!swpPlaying)return;
     const now2=performance.now();
-    // Freq sweep
-    if(swpFqOn&&swpOsc){
+    if(swpOsc){
       let t=(now2-swpFqStart)/1000/swpFqDur;
       if(t>=1){if(swpFqLoop){swpFqFwd=!swpFqFwd;swpFqStart=now2;t=0;}else t=1;}
       if(!swpFqFwd)t=1-t;
@@ -317,19 +331,6 @@ function toggleSweep(){
       const fq=Math.max(1,Math.min(20000,sweepVal(swpFqType,t,swpFqMin,swpFqMax)));
       swpOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);
     }
-    // Vol sweep
-    if(swpVolOn&&swpSigGn){
-      let t=(now2-swpVoStart)/1000/swpVoDur;
-      if(t>=1){if(swpVoLoop){swpVoFwd=!swpVoFwd;swpVoStart=now2;t=0;}else t=1;}
-      if(!swpVoFwd)t=1-t;
-      if(swpVoStepN>1){t=Math.floor(t*swpVoStepN)/(swpVoStepN-1);t=Math.min(1,t);}
-      const vl=Math.max(0,Math.min(100,sweepVal(swpVoType,t,swpVoMin,swpVoMax)));
-      swpSigGn.gain.setTargetAtTime(v2g(vl),AC.currentTime,.005);
-    }
-    // Stop if both sweeps done (non-looping)
-    let fqDone=!swpFqOn||(!swpFqLoop&&(now2-swpFqStart)/1000>=swpFqDur);
-    let voDone=!swpVolOn||(!swpVoLoop&&(now2-swpVoStart)/1000>=swpVoDur);
-    if(fqDone&&voDone&&!swpFqLoop&&!swpVoLoop&&(swpFqOn||swpVolOn)){/* keep playing at final values */}
     swpRAF=requestAnimationFrame(tick);
   }tick();
 }
@@ -346,7 +347,7 @@ function playBurstOnce(time){
   const wd=burstSrc==='noise'?.005:burstSrc==='click'?.001:1/800;
   for(let w=0;w<burstWaves;w++){
     if(burstSrc==='noise'){const s=c.createBufferSource();const b=c.createBuffer(1,Math.ceil(c.sampleRate*wd),c.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;s.buffer=b;s.connect(g);s.start(time+w*wd);}
-    else if(burstSrc==='click'){const s=c.createBufferSource();const b=c.createBuffer(1,Math.ceil(c.sampleRate*.001),c.sampleRate);const d=b.getChannelData(0);d[0]=1;d[1]=-1;s.buffer=b;s.connect(g);s.start(time+w*.0015);}
+    else if(burstSrc==='click'){const s=c.createBufferSource();const b=c.createBuffer(1,Math.ceil(c.sampleRate*.001),c.sampleRate);const d=b.getChannelData(0);d[0]=1.413;d[1]=-1.413;s.buffer=b;s.connect(g);s.start(time+w*.0015);}
     else{const o=c.createOscillator();o.type='sine';o.frequency.value=800;o.connect(g);o.start(time+w*wd);o.stop(time+w*wd+wd);}
   }
   g.gain.setTargetAtTime(0,time+wd*burstWaves+.005,.002);
@@ -369,16 +370,14 @@ const PRESETS={
   Violet:[5,8,15,25,40,55,70,85,95,100],
   Velvet:[75,70,55,40,35,32,30,28,25,20],
   Infra:[100,80,40,10,0,0,0,0,0,0],Ultra:[0,0,0,0,0,10,40,80,100,100],
-  '~60Hz':[8,100,8,0,0,0,0,0,0,0],'~125Hz':[0,8,100,8,0,0,0,0,0,0],
-  '~250Hz':[0,0,8,100,8,0,0,0,0,0],'~500Hz':[0,0,0,8,100,8,0,0,0,0],
-  '~1kHz':[0,0,0,0,8,100,8,0,0,0],'~2kHz':[0,0,0,0,0,8,100,8,0,0],
-  '~4kHz':[0,0,0,0,0,0,8,100,8,0],'~8kHz':[0,0,0,0,0,0,0,8,100,8],
   'Speech Blocker':[0,8,38,100,100,78,38,8,0,0],'Ear Massage':[58,58,58,58,58,58,58,58,58,58]
 };
 const NOISE_COLORS=Object.keys(PRESETS).slice(0,8);
-const NOISE_FREQS=Object.keys(PRESETS).slice(8,16);
-const NOISE_SPEC=Object.keys(PRESETS).slice(16);
-let nNodes=[],nMGain=null,nOn=false,nSl=[50,50,50,50,50,50,50,50,50,50],nVol=60,nAPre='White',eqDrag=-1;
+const NOISE_FREQS=Object.keys(PRESETS).slice(8,10);
+const NOISE_SPEC=Object.keys(PRESETS).slice(10);
+let nNodes=[],nMGain=null,nVsGn=null,nOn=false,nSl=[50,50,50,50,50,50,50,50,50,50],nVol=60,nAPre='White',eqDrag=-1;
+let nVsOn=false,nVsMin=0,nVsMax=100,nVsDur=5,nVsType='linear',nVsLoop=false;
+let nVsPlaying=false,nVsFwd=true,nVsStart=0,nVsRAF=null;
 function initEQ(){
   const c=document.getElementById('eqSliders');
   BANDS.forEach((_,i)=>{
@@ -412,13 +411,32 @@ function applyNP(name){
 }
 function toggleNoise(){
   const c=getAC();
-  if(nOn){nNodes.forEach(n=>{try{n.src.stop();}catch(e){}});nNodes=[];nOn=false;setPB('n',false);return;}
+  if(nOn){nNodes.forEach(n=>{try{n.src.stop();}catch(e){}});nNodes=[];stopNVs();nOn=false;setPB('n',false);return;}
   if(!nMGain){nMGain=c.createGain();nMGain.connect(c.destination);}
+  if(!nVsGn){nVsGn=c.createGain();nVsGn.connect(nMGain);}
+  nVsGn.gain.value=1;
   nMGain.gain.setTargetAtTime(v2g(nVol),c.currentTime,.02);
   const buf=mkNB(c);
-  nNodes=BANDS.map((fc,i)=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=fc;f.Q.value=fc<100?.5:1.2;const g=c.createGain();g.gain.value=v2g(nSl[i]);s.connect(f);f.connect(g);g.connect(nMGain);s.start();return{src:s,gain:g};});
-  nOn=true;setPB('n',true);
+  nNodes=BANDS.map((fc,i)=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=fc;f.Q.value=fc<100?.5:1.2;const g=c.createGain();g.gain.value=v2g(nSl[i]);s.connect(f);f.connect(g);g.connect(nVsGn);s.start();return{src:s,gain:g};});
+  nOn=true;setPB('n',true);if(nVsOn)startNVs();
 }
+function toggleNoiseVs(){
+  nVsOn=!nVsOn;
+  const btn=document.getElementById('nVsOnB');
+  btn.textContent=nVsOn?'ON':'OFF';btn.classList.toggle('on',nVsOn);
+  if(nVsOn&&nOn)startNVs();
+  else if(!nVsOn)stopNVs();
+}
+function startNVs(){
+  if(nVsPlaying)return;nVsPlaying=true;nVsFwd=true;nVsStart=performance.now();
+  (function tick(){if(!nVsPlaying)return;const now=performance.now();let t=(now-nVsStart)/1000/nVsDur;
+    if(t>=1){if(nVsLoop){nVsFwd=!nVsFwd;nVsStart=now;t=0;}else{nVsPlaying=false;if(nVsGn&&AC)nVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);return;}}
+    if(!nVsFwd)t=1-t;
+    const vl=Math.max(0,Math.min(100,sweepVal(nVsType,t,nVsMin,nVsMax)));
+    if(nVsGn&&AC)nVsGn.gain.setTargetAtTime(v2g(vl),AC.currentTime,.005);
+    nVsRAF=requestAnimationFrame(tick);})();
+}
+function stopNVs(){if(nVsRAF)cancelAnimationFrame(nVsRAF);nVsPlaying=false;if(nVsGn&&AC)nVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);}
 
 /* ═══════ MULTI ═══════ */
 let multiRows=[];
@@ -522,7 +540,9 @@ function renderMulti(){
 }
 
 /* ═══════ CALL ═══════ */
-let socket=null,callStream=null,peers={},remoteAudios={};
+let socket=null,callStream=null,peers={},remoteAudios={},iceBuf={};
+let peerQueue=[],peerActive=0,updRAF=null;
+const MAX_CONCURRENT_PEERS=3,PEER_STAGGER_MS=200;
 let micOn=true,speakerOn=true,spkrOn=true,inRoom=false;
 let callAn=null,meterRAF=null,callMon=null;
 const ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}];
@@ -537,31 +557,37 @@ async function joinRoom(){
   inRoom=true;micOn=true;speakerOn=true;spkrOn=true;
   document.getElementById('callLobby').style.display='none';document.getElementById('callRoom').style.display='flex';document.getElementById('roomLabel').textContent=name;updUsers();
   if(typeof io!=='undefined'){
-    socket=io({transports:['websocket','polling']});
+    socket=io({transports:['websocket','polling'],reconnection:true,reconnectionAttempts:10,reconnectionDelay:1000,reconnectionDelayMax:5000});
     socket.on('connect',()=>socket.emit('join',{room:name}));
-    socket.on('room-users',d=>{d.users.forEach(id=>mkPeer(id,true));updUsers();});
-    socket.on('user-joined',d=>{mkPeer(d.id,false);updUsers();});
+    socket.on('reconnect',()=>{Object.keys(peers).forEach(id=>rmPeer(id));const rn=document.getElementById('roomLabel').textContent;if(rn&&inRoom)socket.emit('join',{room:rn});});
+    socket.on('room-users',d=>{d.users.forEach(id=>queuePeer(id,true));updUsers();});
+    socket.on('user-joined',d=>{queuePeer(d.id,false);updUsers();});
     socket.on('user-left',d=>{rmPeer(d.id);updUsers();});
-    socket.on('room-count',d=>document.getElementById('userCount').textContent=d.count);
-    socket.on('signal',async d=>{const{from,signal}=d;if(!peers[from])mkPeer(from,false);const pc=peers[from].pc;try{if(signal.type==='offer'){await pc.setRemoteDescription(new RTCSessionDescription(signal));const a=await pc.createAnswer();await pc.setLocalDescription(a);socket.emit('signal',{to:from,signal:pc.localDescription});}else if(signal.type==='answer')await pc.setRemoteDescription(new RTCSessionDescription(signal));else if(signal.candidate)await pc.addIceCandidate(new RTCIceCandidate(signal));}catch(e){}});
+    socket.on('room-full',()=>{document.getElementById('callErr').textContent='Room is full (max 35 users).';document.getElementById('callErr').style.display='block';exitRoom();});
+    socket.on('signal',async d=>{const{from,signal}=d;if(!peers[from])mkPeer(from,false);const pc=peers[from].pc;try{if(signal.type==='offer'){await pc.setRemoteDescription(new RTCSessionDescription(signal));if(iceBuf[from]){iceBuf[from].forEach(c=>pc.addIceCandidate(new RTCIceCandidate(c)).catch(e=>console.warn('ICE buf err',e)));delete iceBuf[from];}const a=await pc.createAnswer();await pc.setLocalDescription(a);socket.emit('signal',{to:from,signal:pc.localDescription});}else if(signal.type==='answer'){await pc.setRemoteDescription(new RTCSessionDescription(signal));if(iceBuf[from]){iceBuf[from].forEach(c=>pc.addIceCandidate(new RTCIceCandidate(c)).catch(e=>console.warn('ICE buf err',e)));delete iceBuf[from];}}else if(signal.candidates){const addC=c=>{if(pc.remoteDescription&&pc.remoteDescription.type)pc.addIceCandidate(new RTCIceCandidate(c)).catch(e=>console.warn('ICE buf err',e));else{if(!iceBuf[from])iceBuf[from]=[];iceBuf[from].push(c);}};signal.candidates.forEach(addC);}else if(signal.candidate){if(pc.remoteDescription&&pc.remoteDescription.type)await pc.addIceCandidate(new RTCIceCandidate(signal));else{if(!iceBuf[from])iceBuf[from]=[];iceBuf[from].push(signal);}}}catch(e){console.warn('signal err',from,e);}});
   }
 }
+function queuePeer(rid,init){if(peers[rid])return;peerQueue.push({rid,init});drainQueue();}
+function drainQueue(){while(peerQueue.length>0&&peerActive<MAX_CONCURRENT_PEERS){const{rid,init}=peerQueue.shift();if(peers[rid])continue;peerActive++;mkPeer(rid,init);}}
 function mkPeer(rid,init){
   if(peers[rid])return;const c=getAC();
   const pc=new RTCPeerConnection({iceServers:ICE});
   if(callStream)callStream.getTracks().forEach(t=>pc.addTrack(t,callStream));
-  pc.onicecandidate=e=>{if(e.candidate&&socket)socket.emit('signal',{to:rid,signal:e.candidate});};
-  pc.ontrack=e=>{if(e.streams&&e.streams[0]){const a=new Audio();a.srcObject=e.streams[0];a.autoplay=true;a.volume=speakerOn?1:0;remoteAudios[rid]=a;try{c.createMediaStreamSource(e.streams[0]).connect(callMon);}catch(err){}updUsers();}};
-  pc.onconnectionstatechange=()=>{if(pc.connectionState==='disconnected'||pc.connectionState==='failed'){rmPeer(rid);updUsers();}};
-  peers[rid]={pc};
-  if(init)pc.createOffer().then(o=>{pc.setLocalDescription(o);if(socket)socket.emit('signal',{to:rid,signal:o});}).catch(()=>{});
+  let candBuf=[],candTimer=null;
+  pc.onicecandidate=e=>{if(e.candidate&&socket){candBuf.push(e.candidate);if(!candTimer)candTimer=setTimeout(()=>{if(socket&&candBuf.length)socket.emit('signal',{to:rid,signal:{candidates:candBuf}});candBuf=[];candTimer=null;},100);}if(!e.candidate&&candBuf.length&&socket){clearTimeout(candTimer);candTimer=null;socket.emit('signal',{to:rid,signal:{candidates:candBuf}});candBuf=[];}};
+  pc.ontrack=e=>{if(e.streams&&e.streams[0]){const a=new Audio();a.srcObject=e.streams[0];a.autoplay=true;a.volume=speakerOn?1:0;remoteAudios[rid]=a;try{c.createMediaStreamSource(e.streams[0]).connect(callMon);}catch(err){console.warn('audio src err',err);}updUsers();}};
+  const connTimeout=setTimeout(()=>{if(peers[rid]&&peers[rid].pc.connectionState!=='connected'){rmPeer(rid);updUsers();}},15000);
+  pc.onconnectionstatechange=()=>{if(pc.connectionState==='connected'){clearTimeout(connTimeout);peerActive=Math.max(0,peerActive-1);setTimeout(drainQueue,PEER_STAGGER_MS);}else if(pc.connectionState==='failed'){clearTimeout(connTimeout);rmPeer(rid);peerActive=Math.max(0,peerActive-1);drainQueue();updUsers();}else if(pc.connectionState==='disconnected'){setTimeout(()=>{if(peers[rid]&&peers[rid].pc.connectionState!=='connected'){rmPeer(rid);peerActive=Math.max(0,peerActive-1);drainQueue();updUsers();}},5000);}};
+  peers[rid]={pc,connTimeout};
+  if(init)pc.createOffer().then(o=>{pc.setLocalDescription(o);if(socket)socket.emit('signal',{to:rid,signal:o});}).catch(e=>{console.warn('offer err',rid,e);});
 }
-function rmPeer(id){if(peers[id]){peers[id].pc.close();delete peers[id];}if(remoteAudios[id]){remoteAudios[id].srcObject=null;delete remoteAudios[id];}}
-function updUsers(){
+function rmPeer(id){if(peers[id]){if(peers[id].connTimeout)clearTimeout(peers[id].connTimeout);peers[id].pc.close();delete peers[id];}if(remoteAudios[id]){remoteAudios[id].srcObject=null;delete remoteAudios[id];}delete iceBuf[id];}
+function updUsers(){if(updRAF)return;updRAF=requestAnimationFrame(()=>{
   const l=document.getElementById('userList');l.innerHTML='';
   l.innerHTML+='<div class="user-card"><div style="width:24px;height:24px;border-radius:50%;background:#e8e5e0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888">Y</div><span>You</span><div class="user-dot" style="margin-left:auto;background:'+(micOn?'#3a3':'#c44')+'"></div></div>';
   let i=0;Object.keys(peers).forEach(id=>{i++;l.innerHTML+='<div class="user-card"><div style="width:24px;height:24px;border-radius:50%;background:#e8e5e0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888">'+i+'</div><span>Peer '+i+'</span><div class="user-dot" style="margin-left:auto;background:#3a3"></div></div>';});
   document.getElementById('userCount').textContent=1+Object.keys(peers).length;
+  updRAF=null;});
 }
 function startMeter(){
   if(!callAn)return;const buf=new Float32Array(callAn.fftSize);
@@ -570,7 +596,7 @@ function startMeter(){
 function exitRoom(){
   if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null;}
   if(socket){socket.emit('leave');socket.disconnect();socket=null;}
-  Object.keys(peers).forEach(id=>rmPeer(id));peers={};remoteAudios={};
+  Object.keys(peers).forEach(id=>rmPeer(id));peers={};remoteAudios={};iceBuf={};peerQueue=[];peerActive=0;if(updRAF){cancelAnimationFrame(updRAF);updRAF=null;}
   if(meterRAF)cancelAnimationFrame(meterRAF);callAn=null;callMon=null;inRoom=false;
   document.getElementById('loudFill').style.width='0%';document.getElementById('callRoom').style.display='none';document.getElementById('callLobby').style.display='flex';document.getElementById('roomInput').value='';document.getElementById('enterBtn').classList.remove('on');
 }
@@ -581,8 +607,8 @@ function toggleSpeakerphone(){spkrOn=!spkrOn;document.getElementById('spkrC').cl
 /* ═══════ INIT ═══════ */
 initTW();initSwpW();
 initSwpTypes('swpFqTypes','linear',t=>{swpFqType=t;});
-initSwpTypes('swpVoTypes','linear',t=>{swpVoType=t;});
-document.getElementById('swpFqOnB').classList.add('on');
+initVsTypes('tVsTypes','linear',t=>{tVsType=t;});
+initVsTypes('nVsTypes','linear',t=>{nVsType=t;});
 initBSrc();
 initSwpTypes('burstSwpTypes','linear',t=>{bswpType=t;});
 syncBurst();initEQ();initNP();renderMulti();syncTone();
