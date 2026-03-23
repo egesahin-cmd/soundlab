@@ -118,13 +118,22 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .rec-timer{font-size:11px;color:#a0ad95;font-variant-numeric:tabular-nums;min-width:56px}
 .save-btn{background:#dfdacc;border-color:#c2ccb6}
 .save-btn:active{background:#d4cfbc}
+#bbFlash{position:fixed;top:-50px;left:0;right:0;text-align:center;padding:10px 16px;background:#2d6a4e;color:#ede7d4;font-size:10px;letter-spacing:3px;z-index:9999;pointer-events:none;opacity:0;transition:top .18s ease,opacity .25s ease;}
+#bbFlash.show{top:0;opacity:1;}
+/* ═══ BIRDBOX UI ═══ */
+#modBirdbox.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
+#bbBg{position:absolute;inset:0;z-index:0;}
+#bbGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
+#bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;}
+#bbControls{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:flex-end;gap:12px;background:rgba(255,255,255,0.75);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:40px;padding:10px 18px 8px;box-shadow:0 2px 12px rgba(0,0,0,.10);}
+#bbHidden{display:none;}
 </style>
 </head>
 <body>
 <div id="app">
 <div class="tabs">
   <button class="tab active" onclick="switchTab('tone')">TONE</button>
-  <button class="tab" onclick="switchTab('sweep')">SWEEP</button>
+  <button class="tab" onclick="switchTab('birdbox')">BIRDBOX</button>
   <button class="tab" onclick="switchTab('burst')">BURST</button>
   <button class="tab" onclick="switchTab('noise')">NOISE</button>
   <button class="tab" onclick="switchTab('multi')">MULTI</button>
@@ -165,30 +174,39 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   <div class="lbl" id="tonePL">PLAY</div>
 </div>
 
-<!-- ═══ SWEEP ═══ -->
-<div class="mod" id="modSweep">
-  <div id="swpWaves" style="display:flex;gap:5px"></div>
-
-  <!-- FREQ SWEEP SECTION -->
-  <div class="swp-section">
-    <div class="lbl" style="font-weight:600;letter-spacing:2px">FREQUENCY SWEEP</div>
-    <div style="display:flex;gap:14px;align-items:center">
-      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:22px" id="swpFqMinV" onclick="tapNum('swpFqMinV',1,20000,v=>{swpFqMin=v})">20.00</span><span class="vunit">Hz</span></div>
-      <span style="color:#c2ccb6;font-size:16px">→</span>
-      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:22px" id="swpFqMaxV" onclick="tapNum('swpFqMaxV',1,20000,v=>{swpFqMax=v})">2000.00</span><span class="vunit">Hz</span></div>
+<!-- ═══ BIRDBOX ═══ -->
+<div class="mod" id="modBirdbox">
+  <div id="bbBg"></div>
+  <div id="bbGlow"></div>
+  <img id="bbBird" src="henningchristiansen-bird-nobackground.svg" alt="">
+  <div id="bbControls">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button class="pbtn" id="swpPB" onclick="toggleSweep()"><svg id="swpPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="swpSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
+      <div class="lbl" id="swpPL">PLAY</div>
     </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:20px" id="swpFqDurV" onclick="tapNum('swpFqDurV',0.01,2000,v=>{swpFqDur=v})">5.00</span><span class="vunit">sec</span></div>
-    <div class="lbl">TYPE</div>
-    <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center" id="swpFqTypes"></div>
-    <div style="display:flex;gap:6px" id="swpFqDirBtns"></div>
-    <div style="text-align:center"><span class="vnum" style="font-size:20px" id="swpFqStepV" onclick="tapNum('swpFqStepV',1,50,v=>{swpFqStepN=Math.round(v)},true)">1</span><span class="vunit">steps (1 = off)</span></div>
-    <div class="rr"><input type="range" min="1" max="50" value="1" oninput="swpFqStepN=+this.value;document.getElementById('swpFqStepV').textContent=swpFqStepN"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button class="bsm" onclick="randomizeBirdbox()" style="width:40px;height:40px;font-size:16px;border-radius:50%">&#8593;</button>
+      <div class="lbl">ROLL</div>
+    </div>
   </div>
-
-  <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="swpMVolL">VOLUME — 70%</span><span>100%</span></div><input type="range" id="swpMVolR" min="0" max="100" value="70" oninput="swpMVol=+this.value;document.getElementById('swpMVolL').textContent='VOLUME — '+swpMVol+'%';if(swpMGn&&AC)swpMGn.gain.setTargetAtTime(v2g(swpMVol),AC.currentTime,.02)"></div>
-
-  <button class="pbtn" id="swpPB" onclick="toggleSweep()"><svg id="swpPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="swpSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
-  <div class="lbl" id="swpPL">PLAY</div>
+  <div id="bbHidden">
+    <div id="swpWaves"></div>
+    <div class="swp-section">
+      <div class="lbl">BIRDBOX</div>
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="text-align:center"><div class="lbl">A</div><span class="vnum" id="swpFqMinV" onclick="tapNum('swpFqMinV',1,20000,v=>{swpFqMin=v})">20.00</span><span class="vunit">Hz</span></div>
+        <span>&#8594;</span>
+        <div style="text-align:center"><div class="lbl">B</div><span class="vnum" id="swpFqMaxV" onclick="tapNum('swpFqMaxV',1,20000,v=>{swpFqMax=v})">2000.00</span><span class="vunit">Hz</span></div>
+      </div>
+      <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" id="swpFqDurV" onclick="tapNum('swpFqDurV',0.01,2000,v=>{swpFqDur=v})">5.00</span><span class="vunit">sec</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px" id="swpFqTypes"></div>
+      <div style="display:flex;gap:6px" id="swpFqDirBtns"></div>
+    </div>
+    <div class="rr">
+      <div class="lbl-row lbl"><span>0%</span><span id="swpMVolL">VOLUME — 70%</span><span>100%</span></div>
+      <input type="range" id="swpMVolR" min="0" max="100" value="70" oninput="swpMVol=+this.value;document.getElementById('swpMVolL').textContent='VOLUME \u2014 '+swpMVol+'%';if(swpMGn&&AC)swpMGn.gain.setTargetAtTime(v2g(swpMVol),AC.currentTime,.02)">
+    </div>
+  </div>
 </div>
 
 <!-- ═══ BURST ═══ -->
@@ -350,15 +368,18 @@ function syncSwpArrows(){
   document.getElementById('nVsSecArrow').style.color=nVsOn?'#ecc735':'#b89520';
 }
 function setPB(id,p){document.getElementById(id+'PB').classList.toggle('on',p);document.getElementById(id+'PI').style.display=p?'none':'';document.getElementById(id+'SI').style.display=p?'':'none';document.getElementById(id+'PL').textContent=p?'STOP':'PLAY';}
-function mkDirBtns(containerId,dirVar,setFn){
+function mkDirBtns(containerId,dirVar,setFn,dirs){
+  dirs=dirs||['fwd','pp','rev'];
   const c=document.getElementById(containerId);
   const svgA='width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  const pi='<span style="font-size:9px;margin-left:2px;opacity:.75">&#8741;</span>';
   const icons={
     fwd:'<svg '+svgA+'><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
     pp:'<svg '+svgA+'><polyline points="17 2 21 6 17 10"/><line x1="3" y1="6" x2="21" y2="6"/><polyline points="7 14 3 18 7 22"/><line x1="21" y1="18" x2="3" y2="18"/></svg>',
     rev:'<svg '+svgA+'><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>'
   };
-  ['fwd','pp','rev'].forEach(d=>{
+  icons['fwd-p']=icons.fwd+pi;icons['pp-p']=icons.pp+pi;icons['rev-p']=icons.rev+pi;
+  dirs.forEach(d=>{
     const b=document.createElement('button');b.className='bsm'+(d===dirVar?' on':'');
     b.style.cssText='display:flex;align-items:center;justify-content:center;padding:4px 10px';
     b.innerHTML=icons[d];b.dataset.dir=d;
@@ -368,13 +389,14 @@ function mkDirBtns(containerId,dirVar,setFn){
 }
 
 /* ═══════ TABS ═══════ */
-const TN=['tone','sweep','burst','noise','multi','call','tuner','archive'];
+const TN=['tone','birdbox','burst','noise','multi','call','tuner','archive'];
 function switchTab(t){
   document.querySelectorAll('.tabs>.tab').forEach(el=>el.classList.toggle('active',el.textContent.trim().toLowerCase()===t));
   const plusTabs=['call','tuner','archive'];
   document.querySelector('.plus-btn').classList.toggle('active',plusTabs.includes(t));
   TN.forEach(n=>{const m=document.getElementById('mod'+n.charAt(0).toUpperCase()+n.slice(1));if(m)m.classList.toggle('active',n===t);});
   closePlusMenu();
+  document.querySelector('.content').style.overflow=(t==='birdbox')?'hidden':'';
 }
 function togglePlusMenu(e){e.stopPropagation();document.getElementById('plusMenu').classList.toggle('open');}
 function closePlusMenu(){document.getElementById('plusMenu').classList.remove('open');}
@@ -408,12 +430,15 @@ function startTVs(){
 function stopTVs(){if(tVsRAF)cancelAnimationFrame(tVsRAF);tVsPlaying=false;if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);}
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
-const STYPES=['linear','log','wobble','meandering'];
+const STYPES=['linear','log','wobble','meandering','cascade','shard','spiral'];
+const BB_FREQS=[3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000];
+const BB_DURS=[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,4.0,5.0,6.0];
 const VSTYPES=['linear','log','meandering'];
 function initVsTypes(containerId,active,cb){const c=document.getElementById(containerId);VSTYPES.forEach(t=>{const b=document.createElement('button');b.className='preset'+(t===active?' on':'');b.textContent=t.toUpperCase();b.onclick=()=>{cb(t);c.querySelectorAll('.preset').forEach(x=>x.classList.toggle('on',x.textContent===t.toUpperCase()));};c.appendChild(b);});}
 let swpWv=0,swpMVol=70;
 // Freq sweep params
-let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqDir='fwd',swpFqStepN=1;
+let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqDir='fwd';
+let swpPausing=false;
 // Vol sweep params
 let swpPlaying=false,swpOsc=null,swpSigGn=null,swpMGn=null,swpRAF=null,swpStart=0;
 let swpFqFwd=true,swpFqStart=0;
@@ -425,7 +450,10 @@ function sweepVal(type,t,mn,mx){
     case'linear':return mn+(mx-mn)*t;
     case'log':return mn<=0?mn+(mx-mn)*t:mn*Math.pow(mx/Math.max(mn,0.001),t);
     case'wobble':{const v=mn+(mx-mn)*t+(mx-mn)*0.12*Math.sin(t*Math.PI*8);return Math.max(Math.min(mn,mx),Math.min(Math.max(mn,mx),v));}
-    case'meandering':default:{const base=mn+(mx-mn)*t;const w=Math.sin(t*37.7)*Math.cos(t*13.3)*(mx-mn)*0.15;const lo=Math.min(mn,mx),hi=Math.max(mn,mx);return Math.max(lo,Math.min(hi,base+w));}
+    case'meandering':{const base=mn+(mx-mn)*t;const w=Math.sin(t*37.7)*Math.cos(t*13.3)*(mx-mn)*0.15;const lo=Math.min(mn,mx),hi=Math.max(mn,mx);return Math.max(lo,Math.min(hi,base+w));}
+    case'cascade':{const k=4,norm=1-Math.exp(-k);return mn+(mx-mn)*(1-Math.exp(-k*t))/norm;}
+    case'shard':{const freq=6,phase=t*freq,tri=2*Math.abs(phase-Math.floor(phase+0.5)),env=Math.sin(t*Math.PI),dev=(tri-0.5)*(mx-mn)*0.38*env,lo=Math.min(mn,mx),hi=Math.max(mn,mx);return Math.max(lo,Math.min(hi,mn+(mx-mn)*t+dev));}
+    case'spiral':default:{const base=mn+(mx-mn)*t;const ripple=(mx-mn)*0.12*Math.sin(2*Math.PI*(5-3*t)*t)*(1-t);const lo=Math.min(mn,mx),hi=Math.max(mn,mx);return Math.max(lo,Math.min(hi,base+ripple));}
   }
 }
 function toggleSweep(){
@@ -439,18 +467,40 @@ function toggleSweep(){
   const startF=swpFqMin;
   swpOsc.frequency.setValueAtTime(startF,c.currentTime);
   swpOsc.connect(swpSigGn);swpOsc.start();
-  swpPlaying=true;const now=performance.now();swpFqStart=now;swpFqFwd=swpFqDir!=='rev';
+  swpPlaying=true;const now=performance.now();swpFqStart=now;
+  swpFqFwd=swpFqDir!=='rev'&&swpFqDir!=='rev-p';
+  swpPausing=false;
   setPB('swp',true);
   function tick(){
     if(!swpPlaying)return;
     const now2=performance.now();
     if(swpOsc){
       let t=(now2-swpFqStart)/1000/swpFqDur;
-      if(t>=1){if(swpFqDir==='pp'){swpFqFwd=!swpFqFwd;}else{swpFqFwd=swpFqDir!=='rev';}swpFqStart=now2;t=0;}
-      if(!swpFqFwd)t=1-t;
-      if(swpFqStepN>1){t=Math.floor(t*swpFqStepN)/(swpFqStepN-1);t=Math.min(1,t);}
-      const fq=Math.max(1,Math.min(20000,sweepVal(swpFqType,t,swpFqMin,swpFqMax)));
-      swpOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);
+      if(t>=1){
+        const base=swpFqDir.replace('-p','');
+        const hasPause=swpFqDir.endsWith('-p');
+        if(!hasPause){
+          if(base==='pp')swpFqFwd=!swpFqFwd;
+          else swpFqFwd=base!=='rev';
+          swpFqStart=now2;t=0;
+        }else{
+          if(!swpPausing){
+            swpPausing=true;swpFqStart=now2;t=0;
+            if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);
+          }else{
+            swpPausing=false;
+            if(base==='pp')swpFqFwd=!swpFqFwd;
+            else swpFqFwd=base!=='rev';
+            swpFqStart=now2;t=0;
+            if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
+          }
+        }
+      }
+      if(!swpPausing){
+        if(!swpFqFwd)t=1-t;
+        const fq=Math.max(1,Math.min(20000,sweepVal(swpFqType,t,swpFqMin,swpFqMax)));
+        swpOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);
+      }
     }
     swpRAF=requestAnimationFrame(tick);
   }tick();
@@ -863,10 +913,10 @@ function tunerTick(){
 }
 
 /* ═══════ ARCHIVE ═══════ */
-const TYPE_ENC={linear:'l',log:'g',wobble:'w',meandering:'m'};
-const TYPE_DEC={l:'linear',g:'log',w:'wobble',m:'meandering'};
-const DIR_ENC={fwd:'f',pp:'p',rev:'r'};
-const DIR_DEC={f:'fwd',p:'pp',r:'rev'};
+const TYPE_ENC={linear:'l',log:'g',wobble:'w',meandering:'m',cascade:'c',shard:'a',spiral:'s'};
+const TYPE_DEC={l:'linear',g:'log',w:'wobble',m:'meandering',c:'cascade',a:'shard',s:'spiral'};
+const DIR_ENC={fwd:'f',pp:'p',rev:'r','fwd-p':'F','pp-p':'P','rev-p':'R'};
+const DIR_DEC={f:'fwd',p:'pp',r:'rev',F:'fwd-p',P:'pp-p',R:'rev-p'};
 const SRC_ENC={sine:'s',click:'c',noise:'n'};
 const SRC_DEC={s:'sine',c:'click',n:'noise'};
 function archiveKey(ts){return 'plab_'+ts;}
@@ -881,7 +931,7 @@ function captureState(){
     _n:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}),
     tf:toneFreq,tv:toneVol,tw:toneWv,
     vo:tVsOn?1:0,vi:tVsMin,va:tVsMax,vd:tVsDur,vt:TYPE_ENC[tVsType]||'l',vr:DIR_ENC[tVsDir]||'f',
-    sw:swpWv,sm:swpMVol,si:swpFqMin,sx:swpFqMax,sd:swpFqDur,st:TYPE_ENC[swpFqType]||'l',sr:DIR_ENC[swpFqDir]||'f',ss:swpFqStepN,
+    sw:swpWv,sm:swpMVol,si:swpFqMin,sx:swpFqMax,sd:swpFqDur,st:TYPE_ENC[swpFqType]||'l',sr:DIR_ENC[swpFqDir]||'f',
     bs:SRC_ENC[burstSrc]||'s',bp:burstSpd,bw:burstWaves,bv:burstVol,
     be:burstSwpEnabled?1:0,bt:TYPE_ENC[bswpType]||'l',bi:bswpMin,bx:bswpMax,bd:bswpDur,br:DIR_ENC[bswpDir]||'f',
     ns:nSl.slice(),nv:nVol,np:nAPre,
@@ -898,7 +948,7 @@ function restoreState(o){
   multiRows.forEach(r=>multiStopRow(r));
   toneFreq=o.tf;toneVol=o.tv;toneWv=o.tw;
   tVsOn=!!o.vo;tVsMin=o.vi;tVsMax=o.va;tVsDur=o.vd;tVsType=TYPE_DEC[o.vt]||'linear';tVsDir=DIR_DEC[o.vr]||'fwd';
-  swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'fwd';swpFqStepN=o.ss;
+  swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'fwd';
   burstSrc=SRC_DEC[o.bs]||'sine';burstSpd=o.bp;burstWaves=o.bw;burstVol=o.bv;
   burstSwpEnabled=!!o.be;bswpType=TYPE_DEC[o.bt]||'linear';bswpMin=o.bi;bswpMax=o.bx;bswpDur=o.bd;bswpDir=DIR_DEC[o.br]||'fwd';
   nSl=o.ns.slice();nVol=o.nv;nAPre=o.np||null;
@@ -927,7 +977,6 @@ function syncSweepUI(){
   document.getElementById('swpFqMinV').textContent=swpFqMin.toFixed(2);
   document.getElementById('swpFqMaxV').textContent=swpFqMax.toFixed(2);
   document.getElementById('swpFqDurV').textContent=swpFqDur.toFixed(2);
-  document.getElementById('swpFqStepV').textContent=swpFqStepN;
   document.getElementById('swpMVolL').textContent='VOLUME \u2014 '+swpMVol+'%';
   document.getElementById('swpMVolR').value=swpMVol;
   document.querySelectorAll('#swpFqTypes .preset').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===swpFqType));
@@ -1101,6 +1150,86 @@ async function stopRec(){
 }
 window.addEventListener('beforeunload',function(e){if(recActive){e.preventDefault();e.returnValue='';}});
 
+/* ═══════ BIRDBOX RANDOMISE + SWIPE ═══════ */
+function showBBFlash(){var el=document.getElementById('bbFlash');el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},900);}
+
+/* ═══════ BIRDBOX VISUAL ═══════ */
+function bbMapL(v,inMin,inMax,lMin,lMax){var t=Math.max(0,Math.min(1,(v-inMin)/(inMax-inMin)));return Math.round(lMin+t*(lMax-lMin));}
+function updateBBBackground(){
+  var fA=swpFqMin,fB=swpFqMax;
+  var L1=bbMapL(fA,3000,18000,20,75);
+  var L2=bbMapL(fB,3000,18000,20,75);
+  var L3=bbMapL(fA+fB,6000,36000,20,75);
+  var L4=bbMapL(Math.abs(fA-fB),0,15000,20,75);
+  var g='repeating-linear-gradient(-135deg,'
+    +'hsl(52,90%,'+L1+'%),'
+    +'hsl(345,75%,'+L2+'%) 10px,'
+    +'hsl(130,65%,'+L3+'%) 10px,'
+    +'hsl(200,75%,'+L4+'%) 20px)';
+  var el=document.getElementById('bbBg');
+  if(el)el.style.background=g;
+}
+function showBBGlowFlash(){
+  var glow=document.getElementById('bbGlow');
+  if(!glow)return;
+  glow.style.background='radial-gradient(circle 200px at 50% 50%,rgba(255,255,255,0.4),transparent 70%)';
+  glow.style.transition='none';glow.style.opacity='1';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    glow.style.transition='opacity 0.5s ease';glow.style.opacity='0';
+  });});
+}
+function initBBGlow(){
+  var mod=document.getElementById('modBirdbox');
+  var glow=document.getElementById('bbGlow');
+  if(!mod||!glow)return;
+  function glowAt(cx,cy){
+    var r=mod.getBoundingClientRect();
+    var xp=((cx-r.left)/r.width*100).toFixed(1);
+    var yp=((cy-r.top)/r.height*100).toFixed(1);
+    glow.style.background='radial-gradient(circle 140px at '+xp+'% '+yp+'%,rgba(255,255,255,0.35),transparent 70%)';
+    glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';
+  }
+  function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
+  mod.addEventListener('mousemove',function(e){glowAt(e.clientX,e.clientY);});
+  mod.addEventListener('mouseleave',hideGlow);
+  mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
+  mod.addEventListener('touchend',hideGlow,{passive:true});
+}
+
+function bbRand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function randomizeBirdbox(){
+  swpFqMin=bbRand(BB_FREQS);
+  swpFqMax=bbRand(BB_FREQS);
+  swpFqDur=bbRand(BB_DURS);
+  swpFqType=bbRand(STYPES);
+  swpWv=Math.floor(Math.random()*WF.length);
+  swpFqDir=bbRand(['fwd','pp','rev','fwd-p','pp-p','rev-p']);
+  syncSweepUI();
+  if(swpPlaying){
+    swpFqFwd=swpFqDir!=='rev'&&swpFqDir!=='rev-p';
+    swpFqStart=performance.now();
+    swpPausing=false;
+    if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
+    if(swpOsc)swpOsc.type=WF[swpWv];
+  }
+  showBBFlash();
+  updateBBBackground();
+  showBBGlowFlash();
+}
+(function(){
+  let sy=0,sx=0,live=false;
+  document.addEventListener('touchstart',function(e){
+    if(e.target.closest('.tabs,.plus-menu'))return;
+    sy=e.touches[0].clientY;sx=e.touches[0].clientX;live=true;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!live)return;live=false;
+    var dy=sy-e.changedTouches[0].clientY;
+    var dx=Math.abs(sx-e.changedTouches[0].clientX);
+    if(dy>80&&dy>dx*1.5)randomizeBirdbox();
+  },{passive:true});
+})();
+
 /* ═══════ INIT ═══════ */
 initTW();initSwpW();
 initSwpTypes('swpFqTypes','linear',t=>{swpFqType=t;});
@@ -1109,10 +1238,13 @@ initVsTypes('nVsTypes','linear',t=>{nVsType=t;});
 initBSrc();
 initSwpTypes('burstSwpTypes','linear',t=>{bswpType=t;});
 mkDirBtns('tVsDirBtns','fwd',d=>{tVsDir=d;});
-mkDirBtns('swpFqDirBtns','fwd',d=>{swpFqDir=d;});
+mkDirBtns('swpFqDirBtns','fwd',d=>{swpFqDir=d;if(!d.endsWith('-p')&&swpPausing){swpPausing=false;swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},['fwd','pp','rev','fwd-p','pp-p','rev-p']);
 mkDirBtns('bswpDirBtns','fwd',d=>{bswpDir=d;});
 mkDirBtns('nVsDirBtns','fwd',d=>{nVsDir=d;});
 syncBurst();initEQ();initNP();renderMulti();syncTone();drawTunerGauge(0);renderArchive();syncSwpArrows();
+updateBBBackground();
+initBBGlow();
 </script>
+<div id="bbFlash">&#8593; &nbsp; BIRDBOX</div>
 </body>
 </html>
