@@ -26,7 +26,6 @@ input,button,select{font-family:'DM Mono',monospace}
 .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .mod{display:none;padding:16px 14px 60px}
 .mod.active{display:flex;flex-direction:column;align-items:center;gap:14px}
-.footer{padding:4px;text-align:center;font-size:7px;color:#c2ccb6;letter-spacing:1px;flex-shrink:0}
 .lbl{font-size:9px;color:#a0ad95;letter-spacing:1px}
 .lbl-row{display:flex;justify-content:space-between;margin-bottom:3px;width:100%}
 input[type=range]{-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:#c2ccb6;outline:none;cursor:pointer;width:100%}
@@ -125,7 +124,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #bbBg{position:absolute;inset:0;z-index:0;}
 #bbGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
 #bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:brightness(1.815);}
-@media(hover:none) and (pointer:coarse){#bbBg{inset:auto;width:90%;height:90%;top:50%;left:50%;transform:translate(-50%,-50%);}}
 #bbControls{display:none;}
 #bbHidden{display:none;}
 #bbPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
@@ -337,7 +335,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 </div>
 
 </div>
-<div class="footer">PROTECT YOUR HEARING</div>
 </div>
 
 <script src="/socket.io/socket.io.js" onerror=""></script>
@@ -1188,11 +1185,11 @@ function updateBBBackground(){
   var L2=bbMapL(fB,1000,16000,20,75);
   var L3=bbMapL(fA+fB,2000,32000,20,75);
   var L4=bbMapL(Math.abs(fA-fB),0,15000,20,75);
-  var g='repeating-linear-gradient(-135deg,'
+  var g='repeating-linear-gradient(-90deg,'
     +'hsl(52,90%,'+L1+'%),'
-    +'hsl(345,75%,'+L2+'%) 10px,'
-    +'hsl(130,65%,'+L3+'%) 10px,'
-    +'hsl(200,75%,'+L4+'%) 20px)';
+    +'hsl(345,75%,'+L2+'%) 3px,'
+    +'hsl(130,65%,'+L3+'%) 3px,'
+    +'hsl(200,75%,'+L4+'%) 3px)';
   var el=document.getElementById('bbBg');
   if(el)el.style.background=g;
 }
