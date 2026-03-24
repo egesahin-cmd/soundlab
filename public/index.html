@@ -124,7 +124,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #modBirdbox.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #bbBg{position:absolute;inset:0;z-index:0;}
 #bbGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
-#bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;}
+#bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:brightness(1.815);}
+@media(hover:none) and (pointer:coarse){#bbBird{width:25%;height:25%;}}
 #bbControls{display:none;}
 #bbHidden{display:none;}
 #bbPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
@@ -435,7 +436,7 @@ function stopTVs(){if(tVsRAF)cancelAnimationFrame(tVsRAF);tVsPlaying=false;if(tV
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
 const STYPES=['linear','log','wobble','meandering','cascade','shard','spiral'];
-const BB_FREQS=[500,600,700,750,800,900,1000,1250,1500,1750,2000,2250,2500,2750,3000,3250,3500,3750,4000,4250,4500,4750,5000,5250,5500,5750,6000,6500,7000,7500,8000,8500,9000,9500,10000,11000,12000,13000,14000,15000,16000];
+const BB_FREQS=[1000,1250,1500,1750,2000,2250,2500,2750,3000,3250,3500,3750,4000,4250,4500,4750,5000,5250,5500,5750,6000,6500,7000,7500,8000,8500,9000,9500,10000,11000,12000,13000,14000,15000,16000];
 const BB_DURS=[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,4.0,5.0,6.0];
 // Direction types: {k=key, base=right|left|bloop, sm=sweep reps, pm=pause reps}
 const BB_DIRS=(function(){
@@ -1183,10 +1184,10 @@ function showBBFlash(){var el=document.getElementById('bbFlash');el.classList.ad
 function bbMapL(v,inMin,inMax,lMin,lMax){var t=Math.max(0,Math.min(1,(v-inMin)/(inMax-inMin)));return Math.round(lMin+t*(lMax-lMin));}
 function updateBBBackground(){
   var fA=swpFqMin,fB=swpFqMax;
-  var L1=bbMapL(fA,500,16000,20,75);
-  var L2=bbMapL(fB,500,16000,20,75);
-  var L3=bbMapL(fA+fB,1000,32000,20,75);
-  var L4=bbMapL(Math.abs(fA-fB),0,15500,20,75);
+  var L1=bbMapL(fA,1000,16000,20,75);
+  var L2=bbMapL(fB,1000,16000,20,75);
+  var L3=bbMapL(fA+fB,2000,32000,20,75);
+  var L4=bbMapL(Math.abs(fA-fB),0,15000,20,75);
   var g='repeating-linear-gradient(-135deg,'
     +'hsl(52,90%,'+L1+'%),'
     +'hsl(345,75%,'+L2+'%) 10px,'
@@ -1198,12 +1199,15 @@ function updateBBBackground(){
 function showBBBirdFlash(){
   var bird=document.getElementById('bbBird');
   if(!bird)return;
-  bird.style.transition='none';
-  bird.style.filter='brightness(1.65)';
-  requestAnimationFrame(function(){requestAnimationFrame(function(){
+  if(swpPlaying){
+    // stopping → snap to high brightness and stay (stopped state)
+    bird.style.transition='none';
+    bird.style.filter='brightness(1.815)';
+  }else{
+    // starting play → fade from high to normal (playing state)
     bird.style.transition='filter 0.6s ease';
     bird.style.filter='brightness(1)';
-  });});
+  }
 }
 function updateBBBirdOpacity(){
   var bird=document.getElementById('bbBird');
@@ -1219,7 +1223,7 @@ function initBBGlow(){
     var r=mod.getBoundingClientRect();
     var xp=((cx-r.left)/r.width*100).toFixed(1);
     var yp=((cy-r.top)/r.height*100).toFixed(1);
-    glow.style.background='radial-gradient(circle 140px at '+xp+'% '+yp+'%,rgba(255,255,255,0.35),transparent 70%)';
+    glow.style.background='radial-gradient(circle 98px at '+xp+'% '+yp+'%,rgba(255,255,255,0.175),transparent 70%)';
     glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';
   }
   function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
