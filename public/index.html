@@ -124,9 +124,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #modBirdbox.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #bbBg{position:absolute;inset:0;z-index:0;}
 #bbGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
-#bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;}
-#bbControls{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:flex-end;gap:12px;background:rgba(255,255,255,0.75);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:40px;padding:10px 18px 8px;box-shadow:0 2px 12px rgba(0,0,0,.10);}
+#bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;}
+#bbControls{display:none;}
 #bbHidden{display:none;}
+#bbPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -179,12 +180,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   <div id="bbBg"></div>
   <div id="bbGlow"></div>
   <img id="bbBird" src="henningchristiansen-bird-nobackground.svg" alt="">
+  <div id="bbPlayBtn" onclick="toggleSweep()"></div>
   <div id="bbControls">
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <button class="pbtn" id="swpPB" onclick="toggleSweep()"><svg id="swpPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="swpSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
       <div class="lbl" id="swpPL">PLAY</div>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+    <div id="bbRollBtn" style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <button class="bsm" onclick="randomizeBirdbox()" style="width:40px;height:40px;font-size:16px;border-radius:50%">&#8593;</button>
       <div class="lbl">ROLL</div>
     </div>
@@ -382,7 +384,7 @@ function mkDirBtns(containerId,dirVar,setFn,dirs){
   dirs.forEach(d=>{
     const b=document.createElement('button');b.className='bsm'+(d===dirVar?' on':'');
     b.style.cssText='display:flex;align-items:center;justify-content:center;padding:4px 10px';
-    b.innerHTML=icons[d];b.dataset.dir=d;
+    b.innerHTML=icons[d]||d;b.dataset.dir=d;
     b.onclick=function(){setFn(d);c.querySelectorAll('.bsm').forEach(x=>x.classList.toggle('on',x.dataset.dir===d));};
     c.appendChild(b);
   });
@@ -390,6 +392,7 @@ function mkDirBtns(containerId,dirVar,setFn,dirs){
 
 /* ═══════ TABS ═══════ */
 const TN=['tone','birdbox','burst','noise','multi','call','tuner','archive'];
+var bbInitialized=false;
 function switchTab(t){
   document.querySelectorAll('.tabs>.tab').forEach(el=>el.classList.toggle('active',el.textContent.trim().toLowerCase()===t));
   const plusTabs=['call','tuner','archive'];
@@ -397,6 +400,7 @@ function switchTab(t){
   TN.forEach(n=>{const m=document.getElementById('mod'+n.charAt(0).toUpperCase()+n.slice(1));if(m)m.classList.toggle('active',n===t);});
   closePlusMenu();
   document.querySelector('.content').style.overflow=(t==='birdbox')?'hidden':'';
+  if(t==='birdbox'&&!bbInitialized){bbInitialized=true;randomizeBirdbox();}
 }
 function togglePlusMenu(e){e.stopPropagation();document.getElementById('plusMenu').classList.toggle('open');}
 function closePlusMenu(){document.getElementById('plusMenu').classList.remove('open');}
@@ -431,14 +435,26 @@ function stopTVs(){if(tVsRAF)cancelAnimationFrame(tVsRAF);tVsPlaying=false;if(tV
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
 const STYPES=['linear','log','wobble','meandering','cascade','shard','spiral'];
-const BB_FREQS=[3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000];
+const BB_FREQS=[500,600,700,750,800,900,1000,1250,1500,1750,2000,2250,2500,2750,3000,3250,3500,3750,4000,4250,4500,4750,5000,5250,5500,5750,6000,6500,7000,7500,8000,8500,9000,9500,10000,11000,12000,13000,14000,15000,16000];
 const BB_DURS=[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,4.0,5.0,6.0];
+// Direction types: {k=key, base=right|left|bloop, sm=sweep reps, pm=pause reps}
+const BB_DIRS=(function(){
+  var d=[];
+  [['right','r'],['left','l'],['bloop','bl']].forEach(function(pair){
+    var base=pair[0],p=pair[1];
+    d.push({k:p,base:base,sm:1,pm:0});
+    for(var pm=1;pm<=4;pm++)d.push({k:p+'p'+pm,base:base,sm:1,pm:pm});
+    for(var sm=2;sm<=4;sm++)for(var pm=1;pm<=5-sm;pm++)d.push({k:p+sm+'p'+pm,base:base,sm:sm,pm:pm});
+  });
+  return d;
+})();
+function parsDir(k){var d=BB_DIRS.find(function(x){return x.k===k;});return d||{base:'right',sm:1,pm:0};}
 const VSTYPES=['linear','log','meandering'];
 function initVsTypes(containerId,active,cb){const c=document.getElementById(containerId);VSTYPES.forEach(t=>{const b=document.createElement('button');b.className='preset'+(t===active?' on':'');b.textContent=t.toUpperCase();b.onclick=()=>{cb(t);c.querySelectorAll('.preset').forEach(x=>x.classList.toggle('on',x.textContent===t.toUpperCase()));};c.appendChild(b);});}
 let swpWv=0,swpMVol=70;
 // Freq sweep params
-let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqDir='fwd';
-let swpPausing=false;
+let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqDir='r';
+let swpPausing=false,swpBloopReturn=false,swpRepCount=0;
 // Vol sweep params
 let swpPlaying=false,swpOsc=null,swpSigGn=null,swpMGn=null,swpRAF=null,swpStart=0;
 let swpFqFwd=true,swpFqStart=0;
@@ -457,6 +473,7 @@ function sweepVal(type,t,mn,mx){
   }
 }
 function toggleSweep(){
+  showBBBirdFlash();
   const c=getAC();
   if(swpPlaying){if(swpOsc){swpOsc.stop();swpOsc=null;}if(swpRAF)cancelAnimationFrame(swpRAF);swpPlaying=false;setPB('swp',false);return;}
   if(!swpMGn){swpMGn=c.createGain();swpMGn.connect(appMaster);}
@@ -468,37 +485,44 @@ function toggleSweep(){
   swpOsc.frequency.setValueAtTime(startF,c.currentTime);
   swpOsc.connect(swpSigGn);swpOsc.start();
   swpPlaying=true;const now=performance.now();swpFqStart=now;
-  swpFqFwd=swpFqDir!=='rev'&&swpFqDir!=='rev-p';
-  swpPausing=false;
+  var _pd0=parsDir(swpFqDir);swpFqFwd=_pd0.base!=='left';
+  swpPausing=false;swpBloopReturn=false;swpRepCount=0;
   setPB('swp',true);
   function tick(){
     if(!swpPlaying)return;
     const now2=performance.now();
     if(swpOsc){
-      let t=(now2-swpFqStart)/1000/swpFqDur;
+      const pd=parsDir(swpFqDir);
+      const phaseDur=swpPausing?swpFqDur*pd.pm:swpFqDur;
+      let t=(now2-swpFqStart)/1000/phaseDur;
       if(t>=1){
-        const base=swpFqDir.replace('-p','');
-        const hasPause=swpFqDir.endsWith('-p');
-        if(!hasPause){
-          if(base==='pp')swpFqFwd=!swpFqFwd;
-          else swpFqFwd=base!=='rev';
-          swpFqStart=now2;t=0;
+        swpFqStart=now2;t=0;
+        if(swpPausing){
+          swpPausing=false;swpRepCount=0;swpBloopReturn=false;
+          swpFqFwd=pd.base!=='left';
+          if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
+        }else if(swpBloopReturn){
+          swpBloopReturn=false;swpRepCount++;
+          if(swpRepCount<pd.sm){swpFqFwd=true;}
+          else{
+            swpRepCount=0;swpFqFwd=true;
+            if(pd.pm>0){swpPausing=true;if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);}
+          }
         }else{
-          if(!swpPausing){
-            swpPausing=true;swpFqStart=now2;t=0;
-            if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);
+          if(pd.base==='bloop'){
+            swpFqFwd=false;swpBloopReturn=true;
           }else{
-            swpPausing=false;
-            if(base==='pp')swpFqFwd=!swpFqFwd;
-            else swpFqFwd=base!=='rev';
-            swpFqStart=now2;t=0;
-            if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
+            swpRepCount++;
+            if(swpRepCount>=pd.sm){
+              swpRepCount=0;
+              if(pd.pm>0){swpPausing=true;if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);}
+            }
           }
         }
       }
       if(!swpPausing){
-        if(!swpFqFwd)t=1-t;
-        const fq=Math.max(1,Math.min(20000,sweepVal(swpFqType,t,swpFqMin,swpFqMax)));
+        const tf=swpFqFwd?t:1-t;
+        const fq=Math.max(1,Math.min(20000,sweepVal(swpFqType,tf,swpFqMin,swpFqMax)));
         swpOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);
       }
     }
@@ -915,8 +939,10 @@ function tunerTick(){
 /* ═══════ ARCHIVE ═══════ */
 const TYPE_ENC={linear:'l',log:'g',wobble:'w',meandering:'m',cascade:'c',shard:'a',spiral:'s'};
 const TYPE_DEC={l:'linear',g:'log',w:'wobble',m:'meandering',c:'cascade',a:'shard',s:'spiral'};
-const DIR_ENC={fwd:'f',pp:'p',rev:'r','fwd-p':'F','pp-p':'P','rev-p':'R'};
-const DIR_DEC={f:'fwd',p:'pp',r:'rev',F:'fwd-p',P:'pp-p',R:'rev-p'};
+const DIR_ENC={},DIR_DEC={};
+BB_DIRS.forEach(function(d){DIR_ENC[d.k]=d.k;DIR_DEC[d.k]=d.k;});
+// Non-birdbox sweep modules still use fwd/pp/rev
+['fwd','pp','rev'].forEach(function(d){DIR_ENC[d]=d;DIR_DEC[d]=d;});
 const SRC_ENC={sine:'s',click:'c',noise:'n'};
 const SRC_DEC={s:'sine',c:'click',n:'noise'};
 function archiveKey(ts){return 'plab_'+ts;}
@@ -948,7 +974,7 @@ function restoreState(o){
   multiRows.forEach(r=>multiStopRow(r));
   toneFreq=o.tf;toneVol=o.tv;toneWv=o.tw;
   tVsOn=!!o.vo;tVsMin=o.vi;tVsMax=o.va;tVsDur=o.vd;tVsType=TYPE_DEC[o.vt]||'linear';tVsDir=DIR_DEC[o.vr]||'fwd';
-  swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'fwd';
+  swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'r';
   burstSrc=SRC_DEC[o.bs]||'sine';burstSpd=o.bp;burstWaves=o.bw;burstVol=o.bv;
   burstSwpEnabled=!!o.be;bswpType=TYPE_DEC[o.bt]||'linear';bswpMin=o.bi;bswpMax=o.bx;bswpDur=o.bd;bswpDir=DIR_DEC[o.br]||'fwd';
   nSl=o.ns.slice();nVol=o.nv;nAPre=o.np||null;
@@ -1157,10 +1183,10 @@ function showBBFlash(){var el=document.getElementById('bbFlash');el.classList.ad
 function bbMapL(v,inMin,inMax,lMin,lMax){var t=Math.max(0,Math.min(1,(v-inMin)/(inMax-inMin)));return Math.round(lMin+t*(lMax-lMin));}
 function updateBBBackground(){
   var fA=swpFqMin,fB=swpFqMax;
-  var L1=bbMapL(fA,3000,18000,20,75);
-  var L2=bbMapL(fB,3000,18000,20,75);
-  var L3=bbMapL(fA+fB,6000,36000,20,75);
-  var L4=bbMapL(Math.abs(fA-fB),0,15000,20,75);
+  var L1=bbMapL(fA,500,16000,20,75);
+  var L2=bbMapL(fB,500,16000,20,75);
+  var L3=bbMapL(fA+fB,1000,32000,20,75);
+  var L4=bbMapL(Math.abs(fA-fB),0,15500,20,75);
   var g='repeating-linear-gradient(-135deg,'
     +'hsl(52,90%,'+L1+'%),'
     +'hsl(345,75%,'+L2+'%) 10px,'
@@ -1169,14 +1195,21 @@ function updateBBBackground(){
   var el=document.getElementById('bbBg');
   if(el)el.style.background=g;
 }
-function showBBGlowFlash(){
-  var glow=document.getElementById('bbGlow');
-  if(!glow)return;
-  glow.style.background='radial-gradient(circle 200px at 50% 50%,rgba(255,255,255,0.4),transparent 70%)';
-  glow.style.transition='none';glow.style.opacity='1';
+function showBBBirdFlash(){
+  var bird=document.getElementById('bbBird');
+  if(!bird)return;
+  bird.style.transition='none';
+  bird.style.filter='brightness(1.65)';
   requestAnimationFrame(function(){requestAnimationFrame(function(){
-    glow.style.transition='opacity 0.5s ease';glow.style.opacity='0';
+    bird.style.transition='filter 0.6s ease';
+    bird.style.filter='brightness(1)';
   });});
+}
+function updateBBBirdOpacity(){
+  var bird=document.getElementById('bbBird');
+  if(!bird)return;
+  var t=Math.max(0,Math.min(1,(swpFqDur-0.1)/(6.0-0.1)));
+  bird.style.opacity=(0.1+(1-t)*0.9).toFixed(3);
 }
 function initBBGlow(){
   var mod=document.getElementById('modBirdbox');
@@ -1190,8 +1223,6 @@ function initBBGlow(){
     glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';
   }
   function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
-  mod.addEventListener('mousemove',function(e){glowAt(e.clientX,e.clientY);});
-  mod.addEventListener('mouseleave',hideGlow);
   mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
   mod.addEventListener('touchend',hideGlow,{passive:true});
 }
@@ -1203,10 +1234,13 @@ function randomizeBirdbox(){
   swpFqDur=bbRand(BB_DURS);
   swpFqType=bbRand(STYPES);
   swpWv=Math.floor(Math.random()*WF.length);
-  swpFqDir=bbRand(['fwd','pp','rev','fwd-p','pp-p','rev-p']);
+  swpFqDir=bbRand(BB_DIRS).k;
   syncSweepUI();
+  if(swpPlaying) setPB('swp',true);
   if(swpPlaying){
-    swpFqFwd=swpFqDir!=='rev'&&swpFqDir!=='rev-p';
+    var _rPd=parsDir(swpFqDir);
+    swpFqFwd=_rPd.base!=='left';
+    swpBloopReturn=false;swpRepCount=0;
     swpFqStart=performance.now();
     swpPausing=false;
     if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
@@ -1214,7 +1248,6 @@ function randomizeBirdbox(){
   }
   showBBFlash();
   updateBBBackground();
-  showBBGlowFlash();
 }
 (function(){
   let sy=0,sx=0,live=false;
@@ -1226,8 +1259,16 @@ function randomizeBirdbox(){
     if(!live)return;live=false;
     var dy=sy-e.changedTouches[0].clientY;
     var dx=Math.abs(sx-e.changedTouches[0].clientX);
-    if(dy>80&&dy>dx*1.5)randomizeBirdbox();
+    if(dy>80&&dy>dx*1.5&&document.getElementById('modBirdbox').classList.contains('active'))randomizeBirdbox();
   },{passive:true});
+})();
+(function(){
+  var mod=document.getElementById('modBirdbox');
+  mod.addEventListener('click',function(e){
+    if(window.matchMedia('(hover:none) and (pointer:coarse)').matches)return;
+    if(e.target.closest('#bbPlayBtn'))return;
+    randomizeBirdbox();
+  });
 })();
 
 /* ═══════ INIT ═══════ */
@@ -1238,7 +1279,7 @@ initVsTypes('nVsTypes','linear',t=>{nVsType=t;});
 initBSrc();
 initSwpTypes('burstSwpTypes','linear',t=>{bswpType=t;});
 mkDirBtns('tVsDirBtns','fwd',d=>{tVsDir=d;});
-mkDirBtns('swpFqDirBtns','fwd',d=>{swpFqDir=d;if(!d.endsWith('-p')&&swpPausing){swpPausing=false;swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},['fwd','pp','rev','fwd-p','pp-p','rev-p']);
+mkDirBtns('swpFqDirBtns','r',function(d){swpFqDir=d;swpBloopReturn=false;swpRepCount=0;if(swpPausing){swpPausing=false;swpFqFwd=parsDir(d).base!=='left';swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},BB_DIRS.map(function(d){return d.k;}));
 mkDirBtns('bswpDirBtns','fwd',d=>{bswpDir=d;});
 mkDirBtns('nVsDirBtns','fwd',d=>{nVsDir=d;});
 syncBurst();initEQ();initNP();renderMulti();syncTone();drawTunerGauge(0);renderArchive();syncSwpArrows();
