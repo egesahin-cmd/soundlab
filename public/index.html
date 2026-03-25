@@ -117,8 +117,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .rec-timer{font-size:11px;color:#a0ad95;font-variant-numeric:tabular-nums;min-width:56px}
 .save-btn{background:#dfdacc;border-color:#c2ccb6}
 .save-btn:active{background:#d4cfbc}
-#bbFlash{position:fixed;top:-50px;left:0;right:0;text-align:center;padding:10px 16px;background:#2d6a4e;color:#ede7d4;font-size:10px;letter-spacing:3px;z-index:9999;pointer-events:none;opacity:0;transition:top .18s ease,opacity .25s ease;}
-#bbFlash.show{top:0;opacity:1;}
 /* ═══ BIRDBOX UI ═══ */
 #modBirdbox.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #bbBg{position:absolute;inset:0;z-index:0;}
@@ -127,12 +125,22 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #bbControls{display:none;}
 #bbHidden{display:none;}
 #bbPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
+/* ═══ RISER UI ═══ */
+#rsFlash{position:fixed;top:-50px;left:0;right:0;text-align:center;padding:10px 16px;background:#2d6a4e;color:#ede7d4;font-size:10px;letter-spacing:3px;z-index:9999;pointer-events:none;opacity:0;transition:top .18s ease,opacity .25s ease;}
+#rsFlash.show{top:0;opacity:1;}
+#modRiser.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
+#rsBg{position:absolute;inset:0;z-index:0;}
+#rsGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
+#rsBird{position:absolute;top:calc(50% - 10px);left:50%;transform:translate(-50%,-50%);width:79%;height:79%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:brightness(1.815);}
+#rsControls{display:none;}
+#rsHidden{display:none;}
+#rsPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
 </style>
 </head>
 <body>
 <div id="app">
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('tone')">TONE</button>
+  <button class="tab active" onclick="switchTab('riser')">RISER</button>
   <button class="tab" onclick="switchTab('birdbox')">BIRDBOX</button>
   <button class="tab" onclick="switchTab('burst')">BURST</button>
   <button class="tab" onclick="switchTab('noise')">NOISE</button>
@@ -148,30 +156,40 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 </div>
 <div class="content">
 
-<!-- ═══ TONE ═══ -->
-<div class="mod active" id="modTone">
-  <div id="toneWaves" style="display:flex;gap:5px"></div>
-  <div style="text-align:center" id="toneFreqBox">
-    <span class="vnum" id="toneFreqV" onclick="tapNum('toneFreqV',1,20000,v=>{toneFreq=v;syncTone()})">400.00</span><span class="vunit">Hz</span>
-    <div class="lbl" style="margin-top:2px">TAP TO EDIT</div>
-  </div>
-  <div style="display:flex;gap:5px"><button class="bsm" onclick="toneFreq=Math.max(1,toneFreq/2);syncTone()">÷2</button><button class="bsm" onclick="toneFreq=Math.max(1,toneFreq-1);syncTone()">−1</button><button class="bsm" onclick="toneFreq=Math.min(20000,toneFreq+1);syncTone()">+1</button><button class="bsm" onclick="toneFreq=Math.min(20000,toneFreq*2);syncTone()">×2</button></div>
-  <div class="rr"><div class="lbl-row lbl"><span>1 Hz</span><span>FREQUENCY</span><span>20 kHz</span></div><input type="range" id="toneFreqR" min="0" max="10000" value="5000" oninput="toneFreq=s2f(+this.value);syncTone(1)"></div>
-  <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="toneVolL">VOLUME — 50%</span><span>100%</span></div><input type="range" id="toneVolR" min="0" max="100" value="50" oninput="toneVol=+this.value;syncTone()"></div>
-  <div class="section-toggle" onclick="togSection('tVsSec')">VOLUME SWEEP<span id="tVsSecArrow" style="color:#b89520">▼</span></div>
-  <div class="section-body swp-sub" id="tVsSec">
-    <button class="bsm" id="tVsOnB" onclick="toggleToneVs()">OFF</button>
-    <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center" id="tVsTypes"></div>
-    <div style="display:flex;gap:12px;align-items:center">
-      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:18px" id="tVsMinV" onclick="tapNum('tVsMinV',0,100,v=>{tVsMin=v})">0.00</span><span class="vunit">%</span></div>
-      <span style="color:#e8ddb0">→</span>
-      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:18px" id="tVsMaxV" onclick="tapNum('tVsMaxV',0,100,v=>{tVsMax=v})">100.00</span><span class="vunit">%</span></div>
+<!-- ═══ RISER ═══ -->
+<div class="mod active" id="modRiser">
+  <div id="rsBg"></div>
+  <div id="rsGlow"></div>
+  <img id="rsBird" src="henningchristiansen-riser.svg" alt="">
+  <div id="rsPlayBtn" onclick="toggleRiser()"></div>
+  <div id="rsControls">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button class="pbtn" id="rsPB" onclick="toggleRiser()"><svg id="rsPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="rsSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
+      <div class="lbl" id="rsPL">PLAY</div>
     </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="tVsDurV" onclick="tapNum('tVsDurV',0.001,2000,v=>{tVsDur=v},false,3)">5.000</span><span class="vunit">sec</span></div>
-    <div style="display:flex;gap:5px" id="tVsDirBtns"></div>
+    <div id="rsRollBtn" style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button class="bsm" onclick="randomizeRiser()" style="width:40px;height:40px;font-size:16px;border-radius:50%">&#8593;</button>
+      <div class="lbl">ROLL</div>
+    </div>
   </div>
-  <button class="pbtn" id="tonePB" onclick="toggleTone()"><svg id="tonePI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="toneSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
-  <div class="lbl" id="tonePL">PLAY</div>
+  <div id="rsHidden">
+    <div id="rsWaves"></div>
+    <div class="swp-section">
+      <div class="lbl">RISER</div>
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="text-align:center"><div class="lbl">A</div><span class="vnum" id="rsFqMinV" onclick="tapNum('rsFqMinV',1,20000,v=>{rsFqMin=v})">100.00</span><span class="vunit">Hz</span></div>
+        <span>&#8594;</span>
+        <div style="text-align:center"><div class="lbl">B</div><span class="vnum" id="rsFqMaxV" onclick="tapNum('rsFqMaxV',1,20000,v=>{rsFqMax=v})">8000.00</span><span class="vunit">Hz</span></div>
+      </div>
+      <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" id="rsFqDurV" onclick="tapNum('rsFqDurV',0.01,500,v=>{rsFqDur=v})">30.00</span><span class="vunit">sec</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px" id="rsFqTypes"></div>
+      <div style="display:flex;gap:6px" id="rsFqDirBtns"></div>
+    </div>
+    <div class="rr">
+      <div class="lbl-row lbl"><span>0%</span><span id="rsMVolL">VOLUME — 70%</span><span>100%</span></div>
+      <input type="range" id="rsMVolR" min="0" max="100" value="70" oninput="rsMVol=+this.value;document.getElementById('rsMVolL').textContent='VOLUME \u2014 '+rsMVol+'%';if(rsMGn&&AC)rsMGn.gain.setTargetAtTime(v2g(rsMVol),AC.currentTime,.02)">
+    </div>
+  </div>
 </div>
 
 <!-- ═══ BIRDBOX ═══ -->
@@ -363,7 +381,6 @@ function tapNum(id,min,max,cb,isInt,dec){
 }
 function togSection(id){const b=document.getElementById(id);const o=b.classList.toggle('open');document.getElementById(id+'Arrow').textContent=o?'▲':'▼';}
 function syncSwpArrows(){
-  document.getElementById('tVsSecArrow').style.color=tVsOn?'#ecc735':'#b89520';
   document.getElementById('burstSwpArrow').style.color=burstSwpEnabled?'#ecc735':'#b89520';
   document.getElementById('nVsSecArrow').style.color=nVsOn?'#ecc735':'#b89520';
 }
@@ -389,52 +406,38 @@ function mkDirBtns(containerId,dirVar,setFn,dirs){
 }
 
 /* ═══════ TABS ═══════ */
-const TN=['tone','birdbox','burst','noise','multi','call','tuner','archive'];
-var bbInitialized=false;
+const TN=['riser','birdbox','burst','noise','multi','call','tuner','archive'];
+var bbInitialized=false,rsInitialized=false;
 function switchTab(t){
   document.querySelectorAll('.tabs>.tab').forEach(el=>el.classList.toggle('active',el.textContent.trim().toLowerCase()===t));
   const plusTabs=['call','tuner','archive'];
   document.querySelector('.plus-btn').classList.toggle('active',plusTabs.includes(t));
   TN.forEach(n=>{const m=document.getElementById('mod'+n.charAt(0).toUpperCase()+n.slice(1));if(m)m.classList.toggle('active',n===t);});
   closePlusMenu();
-  document.querySelector('.content').style.overflow=(t==='birdbox')?'hidden':'';
+  document.querySelector('.content').style.overflow=(t==='birdbox'||t==='riser')?'hidden':'';
   if(t==='birdbox'&&!bbInitialized){bbInitialized=true;randomizeBirdbox();}
+  if(t==='riser'&&!rsInitialized){rsInitialized=true;randomizeRiser();}
 }
 function togglePlusMenu(e){e.stopPropagation();document.getElementById('plusMenu').classList.toggle('open');}
 function closePlusMenu(){document.getElementById('plusMenu').classList.remove('open');}
 document.addEventListener('click',()=>closePlusMenu());
 
-/* ═══════ TONE ═══════ */
+/* ═══════ SHARED WAVEFORMS ═══════ */
 const WF=['sine','sawtooth','square','triangle'],WI=['∿','⩘','⊓','△'],WN=['SINE','SAW','SQR','TRI'];
-let toneOsc=null,toneGn=null,tVsGn=null,toneOn=false,toneFreq=400,toneVol=50,toneWv=0;
-let tVsOn=false,tVsMin=0,tVsMax=100,tVsDur=5,tVsType='linear',tVsDir='fwd';
-let tVsPlaying=false,tVsFwd=true,tVsStart=0,tVsRAF=null;
-function initTW(){const c=document.getElementById('toneWaves');WF.forEach((_,i)=>{const b=document.createElement('button');b.className='wbtn'+(i===0?' on':'');b.innerHTML='<span style="font-size:20px;line-height:1">'+WI[i]+'</span>';b.onclick=()=>{toneWv=i;document.querySelectorAll('#toneWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===i));if(toneOsc)toneOsc.type=WF[i];};c.appendChild(b);});}
-function syncTone(ns){toneFreq=r2(Math.max(1,Math.min(20000,toneFreq)));document.getElementById('toneFreqV').textContent=toneFreq.toFixed(2);if(!ns)document.getElementById('toneFreqR').value=f2s(toneFreq);document.getElementById('toneVolL').textContent='VOLUME — '+toneVol+'%';if(toneOsc&&AC)toneOsc.frequency.setTargetAtTime(toneFreq,AC.currentTime,.008);if(toneGn&&AC)toneGn.gain.setTargetAtTime(v2g(toneVol),AC.currentTime,.02);}
-function toggleTone(){const c=getAC();if(toneOn){if(toneOsc){toneOsc.stop();toneOsc=null;}stopTVs();toneOn=false;}else{if(!toneGn){toneGn=c.createGain();toneGn.connect(appMaster);}if(!tVsGn){tVsGn=c.createGain();tVsGn.connect(toneGn);}tVsGn.gain.value=1;toneGn.gain.setTargetAtTime(v2g(toneVol),c.currentTime,.02);toneOsc=c.createOscillator();toneOsc.type=WF[toneWv];toneOsc.frequency.setValueAtTime(toneFreq,c.currentTime);toneOsc.connect(tVsGn);toneOsc.start();toneOn=true;if(tVsOn)startTVs();}setPB('tone',toneOn);}
-function toggleToneVs(){
-  tVsOn=!tVsOn;
-  const btn=document.getElementById('tVsOnB');
-  btn.textContent=tVsOn?'ON':'OFF';btn.classList.toggle('on',tVsOn);
-  if(tVsOn&&toneOn)startTVs();
-  else if(!tVsOn)stopTVs();
-  syncSwpArrows();
-}
-function startTVs(){
-  if(tVsPlaying)return;tVsPlaying=true;tVsFwd=tVsDir!=='rev';tVsStart=performance.now();
-  (function tick(){if(!tVsPlaying)return;const now=performance.now();let t=(now-tVsStart)/1000/tVsDur;
-    if(t>=1){if(tVsDir==='pp'){tVsFwd=!tVsFwd;}else{tVsFwd=tVsDir!=='rev';}tVsStart=now;t=0;}
-    if(!tVsFwd)t=1-t;
-    const vl=Math.max(0,Math.min(100,sweepVal(tVsType,t,tVsMin,tVsMax)));
-    if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(v2g(vl),AC.currentTime,.005);
-    tVsRAF=requestAnimationFrame(tick);})();
-}
-function stopTVs(){if(tVsRAF)cancelAnimationFrame(tVsRAF);tVsPlaying=false;if(tVsGn&&AC)tVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);}
+/* ═══════ RISER STATE ═══════ */
+let rsWv=0,rsMVol=70;
+let rsFqMin=100,rsFqMax=8000,rsFqDur=30,rsFqType='linear',rsFqDir='r';
+let rsPausing=false,rsBloopReturn=false,rsRepCount=0;
+let rsPlaying=false,rsOsc=null,rsSigGn=null,rsMGn=null,rsRAF=null;
+let rsFqFwd=true,rsFqStart=0;
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
 const STYPES=['linear','log','wobble','meandering','cascade','shard','spiral'];
 const BB_FREQS=[1000,1250,1500,1750,2000,2250,2500,2750,3000,3250,3500,3750,4000,4250,4500,4750,5000,5250,5500,5750,6000,6500,7000,7500,8000,8500,9000,9500,10000,11000,12000,13000,14000,15000,16000];
-const BB_DURS=[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0,4.0,5.0,6.0];
+const BB_DURS=[0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,1.75,2.0,2.5,3.0];
+const RS_FREQS_A=[50,100,150,200,250,300,350,400];
+const RS_FREQS_B=[4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000];
+const RS_DURS=[30,45,60,80,90,100,120,150,200,250,300,400,500];
 // Direction types: {k=key, base=right|left|bloop, sm=sweep reps, pm=pause reps}
 const BB_DIRS=(function(){
   var d=[];
@@ -953,8 +956,7 @@ function captureState(){
   return{
     _t:Date.now(),
     _n:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}),
-    tf:toneFreq,tv:toneVol,tw:toneWv,
-    vo:tVsOn?1:0,vi:tVsMin,va:tVsMax,vd:tVsDur,vt:TYPE_ENC[tVsType]||'l',vr:DIR_ENC[tVsDir]||'f',
+    rw:rsWv,rm:rsMVol,ri:rsFqMin,rx:rsFqMax,rd:rsFqDur,rt:TYPE_ENC[rsFqType]||'l',rr:DIR_ENC[rsFqDir]||'r',
     sw:swpWv,sm:swpMVol,si:swpFqMin,sx:swpFqMax,sd:swpFqDur,st:TYPE_ENC[swpFqType]||'l',sr:DIR_ENC[swpFqDir]||'f',
     bs:SRC_ENC[burstSrc]||'s',bp:burstSpd,bw:burstWaves,bv:burstVol,
     be:burstSwpEnabled?1:0,bt:TYPE_ENC[bswpType]||'l',bi:bswpMin,bx:bswpMax,bd:bswpDur,br:DIR_ENC[bswpDir]||'f',
@@ -965,13 +967,13 @@ function captureState(){
   };
 }
 function restoreState(o){
-  if(toneOn)toggleTone();
+  if(rsPlaying)toggleRiser();
   if(swpPlaying)toggleSweep();
   if(burstPlaying)toggleBurst();
   if(nOn)toggleNoise();
   multiRows.forEach(r=>multiStopRow(r));
-  toneFreq=o.tf;toneVol=o.tv;toneWv=o.tw;
-  tVsOn=!!o.vo;tVsMin=o.vi;tVsMax=o.va;tVsDur=o.vd;tVsType=TYPE_DEC[o.vt]||'linear';tVsDir=DIR_DEC[o.vr]||'fwd';
+  rsWv=o.rw||0;rsMVol=o.rm!=null?o.rm:70;
+  rsFqMin=o.ri||100;rsFqMax=o.rx||8000;rsFqDur=o.rd||30;rsFqType=TYPE_DEC[o.rt]||'linear';rsFqDir=DIR_DEC[o.rr]||'r';
   swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'r';
   burstSrc=SRC_DEC[o.bs]||'sine';burstSpd=o.bp;burstWaves=o.bw;burstVol=o.bv;
   burstSwpEnabled=!!o.be;bswpType=TYPE_DEC[o.bt]||'linear';bswpMin=o.bi;bswpMax=o.bx;bswpDur=o.bd;bswpDir=DIR_DEC[o.br]||'fwd';
@@ -979,23 +981,9 @@ function restoreState(o){
   nVsOn=!!o.no;nVsMin=o.ni;nVsMax=o.nx;nVsDur=o.nd;nVsType=TYPE_DEC[o.nt]||'linear';nVsDir=DIR_DEC[o.nr]||'fwd';
   multiMVol=o.mv;
   multiRows=(o.mr||[]).map(r=>({id:Date.now()+Math.random(),type:r.t===0?'TONE':'NOISE',playing:false,osc:null,gain:null,nodes:[],vol:r.v,freq:r.f,wave:r.w,noisePreset:r.p||'White',noiseSl:r.s.slice()}));
-  syncToneUI();syncSweepUI();syncBurstUI();syncNoiseUI();syncMultiUI();
+  syncRiserUI();syncSweepUI();syncBurstUI();syncNoiseUI();syncMultiUI();
 }
-function syncToneUI(){
-  document.querySelectorAll('#toneWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===toneWv));
-  syncTone();
-  document.getElementById('toneVolR').value=toneVol;
-  document.getElementById('toneVolL').textContent='VOLUME \u2014 '+toneVol+'%';
-  document.getElementById('tVsOnB').textContent=tVsOn?'ON':'OFF';
-  document.getElementById('tVsOnB').classList.toggle('on',tVsOn);
-  document.getElementById('tVsMinV').textContent=tVsMin.toFixed(2);
-  document.getElementById('tVsMaxV').textContent=tVsMax.toFixed(2);
-  document.getElementById('tVsDurV').textContent=tVsDur.toFixed(3);
-  document.querySelectorAll('#tVsTypes .preset').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===tVsType));
-  document.querySelectorAll('#tVsDirBtns .bsm').forEach(b=>b.classList.toggle('on',b.dataset.dir===tVsDir));
-  syncSwpArrows();
-  setPB('tone',false);
-}
+
 function syncSweepUI(){
   document.querySelectorAll('#swpWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===swpWv));
   document.getElementById('swpFqMinV').textContent=swpFqMin.toFixed(2);
@@ -1175,8 +1163,6 @@ async function stopRec(){
 window.addEventListener('beforeunload',function(e){if(recActive){e.preventDefault();e.returnValue='';}});
 
 /* ═══════ BIRDBOX RANDOMISE + SWIPE ═══════ */
-function showBBFlash(){var el=document.getElementById('bbFlash');el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},900);}
-
 /* ═══════ BIRDBOX VISUAL ═══════ */
 function bbMapL(v,inMin,inMax,lMin,lMax){var t=Math.max(0,Math.min(1,(v-inMin)/(inMax-inMin)));return Math.round(lMin+t*(lMax-lMin));}
 function updateBBBackground(){
@@ -1209,7 +1195,7 @@ function showBBBirdFlash(){
 function updateBBBirdOpacity(){
   var bird=document.getElementById('bbBird');
   if(!bird)return;
-  var t=Math.max(0,Math.min(1,(swpFqDur-0.1)/(6.0-0.1)));
+  var t=Math.max(0,Math.min(1,(swpFqDur-0.1)/(3.0-0.1)));
   bird.style.opacity=(0.1+(1-t)*0.9).toFixed(3);
 }
 function initBBGlow(){
@@ -1247,8 +1233,132 @@ function randomizeBirdbox(){
     if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
     if(swpOsc)swpOsc.type=WF[swpWv];
   }
-  showBBFlash();
   updateBBBackground();
+}
+/* ═══════ RISER VISUAL ═══════ */
+function showRsFlash(){var el=document.getElementById('rsFlash');el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},900);}
+function updateRsBackground(){
+  var fA=rsFqMin,fB=rsFqMax;
+  var L1=bbMapL(fA,50,400,20,75);
+  var L2=bbMapL(fB,4000,16000,20,75);
+  var L3=bbMapL(fA+fB,4050,16400,20,75);
+  var L4=bbMapL(Math.abs(fA-fB),3600,15950,20,75);
+  var g='repeating-linear-gradient(180deg,'
+    +'hsl(60,100%,'+L1+'%),'
+    +'hsl(350,80%,'+L2+'%) 1px,'
+    +'hsl(120,60%,'+L3+'%) 1px,'
+    +'hsl(197,71%,'+L4+'%) 2px)';
+  var el=document.getElementById('rsBg');
+  if(el)el.style.background=g;
+}
+function showRsBirdFlash(){
+  var bird=document.getElementById('rsBird');
+  if(!bird)return;
+  if(rsPlaying){bird.style.transition='filter 0.6s ease';bird.style.filter='brightness(1)';}
+  else{bird.style.transition='none';bird.style.filter='brightness(1.815)';}
+}
+function updateRsBirdOpacity(){
+  var bird=document.getElementById('rsBird');
+  if(!bird)return;
+  var t=Math.max(0,Math.min(1,(rsFqDur-30)/(500-30)));
+  bird.style.opacity=(0.1+(1-t)*0.9).toFixed(3);
+}
+function initRsGlow(){
+  var mod=document.getElementById('modRiser');
+  var glow=document.getElementById('rsGlow');
+  if(!mod||!glow)return;
+  function glowAt(cx,cy){var r=mod.getBoundingClientRect();var xp=((cx-r.left)/r.width*100).toFixed(1);var yp=((cy-r.top)/r.height*100).toFixed(1);glow.style.background='radial-gradient(circle 98px at '+xp+'% '+yp+'%,rgba(255,255,255,0.175),transparent 70%)';glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';}
+  function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
+  mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
+  mod.addEventListener('touchend',hideGlow,{passive:true});
+}
+function initRsSwipe(){
+  var mod=document.getElementById('modRiser');
+  if(!mod)return;
+  var startY=0;
+  mod.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;},{passive:true});
+  mod.addEventListener('touchend',function(e){
+    var dy=e.changedTouches[0].clientY-startY;
+    if(Math.abs(dy)<40)return;
+    var dir=dy<0?'r':'l';
+    e.preventDefault();
+    randomizeRiser();
+    rsFqDir=dir;
+    rsFqFwd=parsDir(dir).base!=='left';
+    document.querySelectorAll('#rsFqDirBtns .bsm').forEach(function(b){b.classList.toggle('on',b.dataset.dir===dir);});
+    if(!rsPlaying){toggleRiser();}
+  },{passive:false});
+}
+/* ═══════ RISER RANDOMISE ═══════ */
+function randomizeRiser(){
+  rsFqMin=bbRand(RS_FREQS_A);rsFqMax=bbRand(RS_FREQS_B);
+  rsFqDur=bbRand(RS_DURS);rsFqType=bbRand(STYPES);
+  rsWv=Math.floor(Math.random()*WF.length);
+  syncRiserUI();
+  if(rsPlaying){
+    var _rPd=parsDir(rsFqDir);rsFqFwd=_rPd.base!=='left';
+    rsBloopReturn=false;rsRepCount=0;rsFqStart=performance.now();rsPausing=false;
+    if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);
+    if(rsOsc)rsOsc.type=WF[rsWv];
+  }
+  showRsFlash();
+}
+/* ═══════ RISER ENGINE ═══════ */
+function syncRsW(){
+  const c=document.getElementById('rsWaves');
+  WF.forEach(function(w,i){
+    const b=document.createElement('button');b.className='wbtn'+(i===rsWv?' on':'');b.dataset.wv=i;
+    b.innerHTML='<span style="font-size:20px;line-height:1">'+WI[i]+'</span>';
+    b.onclick=function(){rsWv=i;c.querySelectorAll('.wbtn').forEach(function(x){x.classList.toggle('on',+x.dataset.wv===i);});if(rsOsc)rsOsc.type=WF[i];};
+    c.appendChild(b);
+  });
+}
+function syncRiserUI(){
+  document.querySelectorAll('#rsWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===rsWv));
+  document.getElementById('rsFqMinV').textContent=rsFqMin.toFixed(2);
+  document.getElementById('rsFqMaxV').textContent=rsFqMax.toFixed(2);
+  document.getElementById('rsFqDurV').textContent=rsFqDur.toFixed(2);
+  document.getElementById('rsMVolL').textContent='VOLUME \u2014 '+rsMVol+'%';
+  document.getElementById('rsMVolR').value=rsMVol;
+  document.querySelectorAll('#rsFqTypes .preset').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===rsFqType));
+  updateRsBackground();updateRsBirdOpacity();
+}
+function toggleRiser(){
+  const c=getAC();
+  if(rsPlaying){
+    rsPlaying=false;
+    if(rsOsc){rsOsc.stop();rsOsc=null;}
+    if(rsSigGn){rsSigGn.disconnect();rsSigGn=null;}
+    if(rsMGn){rsMGn.disconnect();rsMGn=null;}
+    if(rsRAF)cancelAnimationFrame(rsRAF);
+    setPB('rs',false);showRsBirdFlash();return;
+  }
+  rsPlaying=true;
+  rsMGn=c.createGain();rsMGn.gain.value=v2g(rsMVol);rsMGn.connect(appMaster);
+  rsSigGn=c.createGain();rsSigGn.gain.value=1;rsSigGn.connect(rsMGn);
+  rsOsc=c.createOscillator();rsOsc.type=WF[rsWv];rsOsc.frequency.value=rsFqMin;
+  rsOsc.connect(rsSigGn);rsOsc.start();
+  rsFqStart=performance.now();
+  var _pd0=parsDir(rsFqDir);rsFqFwd=_pd0.base!=='left';
+  rsPausing=false;rsBloopReturn=false;rsRepCount=0;
+  setPB('rs',true);showRsBirdFlash();
+  function tick(){
+    if(!rsPlaying)return;
+    const now2=performance.now();
+    if(rsOsc){
+      const pd=parsDir(rsFqDir);
+      const phaseDur=rsPausing?rsFqDur*pd.pm:rsFqDur;
+      let t=(now2-rsFqStart)/1000/phaseDur;
+      if(t>=1){
+        rsFqStart=now2;t=0;
+        if(rsPausing){rsPausing=false;rsRepCount=0;rsBloopReturn=false;rsFqFwd=pd.base!=='left';if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}
+        else if(rsBloopReturn){rsBloopReturn=false;rsRepCount++;if(rsRepCount<pd.sm){rsFqFwd=true;}else{rsRepCount=0;rsFqFwd=true;if(pd.pm>0){rsPausing=true;if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);}}}
+        else{if(pd.base==='bloop'){rsFqFwd=false;rsBloopReturn=true;}else{rsRepCount++;if(rsRepCount>=pd.sm){rsRepCount=0;if(pd.pm>0){rsPausing=true;if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(0,AC.currentTime,.01);}}}}
+      }
+      if(!rsPausing){const tf=rsFqFwd?t:1-t;const fq=Math.max(1,Math.min(20000,sweepVal(rsFqType,tf,rsFqMin,rsFqMax)));rsOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);}
+    }
+    rsRAF=requestAnimationFrame(tick);
+  }tick();
 }
 (function(){
   let sy=0,sx=0,live=false;
@@ -1271,22 +1381,36 @@ function randomizeBirdbox(){
     randomizeBirdbox();
   });
 })();
+(function(){
+  var mod=document.getElementById('modRiser');
+  mod.addEventListener('click',function(e){
+    if(window.matchMedia('(hover:none) and (pointer:coarse)').matches)return;
+    if(e.target.closest('#rsPlayBtn'))return;
+    var rect=mod.getBoundingClientRect();
+    var dir=(e.clientY<rect.top+rect.height/2)?'l':'r';
+    randomizeRiser();
+    rsFqDir=dir;
+    rsFqFwd=parsDir(dir).base!=='left';
+    document.querySelectorAll('#rsFqDirBtns .bsm').forEach(function(b){b.classList.toggle('on',b.dataset.dir===dir);});
+    if(!rsPlaying){toggleRiser();}
+  });
+})();
 
 /* ═══════ INIT ═══════ */
-initTW();initSwpW();
+syncRsW();initSwpW();
+initSwpTypes('rsFqTypes','linear',t=>{rsFqType=t;});
 initSwpTypes('swpFqTypes','linear',t=>{swpFqType=t;});
-initVsTypes('tVsTypes','linear',t=>{tVsType=t;});
 initVsTypes('nVsTypes','linear',t=>{nVsType=t;});
 initBSrc();
 initSwpTypes('burstSwpTypes','linear',t=>{bswpType=t;});
-mkDirBtns('tVsDirBtns','fwd',d=>{tVsDir=d;});
+mkDirBtns('rsFqDirBtns','r',function(d){rsFqDir=d;rsBloopReturn=false;rsRepCount=0;if(rsPausing){rsPausing=false;rsFqFwd=parsDir(d).base!=='left';rsFqStart=performance.now();if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},['r','l']);
 mkDirBtns('swpFqDirBtns','r',function(d){swpFqDir=d;swpBloopReturn=false;swpRepCount=0;if(swpPausing){swpPausing=false;swpFqFwd=parsDir(d).base!=='left';swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},BB_DIRS.map(function(d){return d.k;}));
 mkDirBtns('bswpDirBtns','fwd',d=>{bswpDir=d;});
 mkDirBtns('nVsDirBtns','fwd',d=>{nVsDir=d;});
-syncBurst();initEQ();initNP();renderMulti();syncTone();drawTunerGauge(0);renderArchive();syncSwpArrows();
-updateBBBackground();
-initBBGlow();
+syncBurst();initEQ();initNP();renderMulti();drawTunerGauge(0);renderArchive();syncSwpArrows();
+syncRiserUI();updateBBBackground();
+initRsGlow();initRsSwipe();initBBGlow();
 </script>
-<div id="bbFlash">&#8593; &nbsp; BIRDBOX</div>
+<div id="rsFlash">&#8593; &nbsp; RISER</div>
 </body>
 </html>
