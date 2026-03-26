@@ -370,7 +370,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <script>
 /* ═══════ UTILS ═══════ */
 let AC=null,appMaster=null;
-function getAC(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();appMaster=AC.createGain();appMaster.connect(AC.destination);}if(AC.state==='suspended')AC.resume();return AC;}
+function getAC(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();appMaster=AC.createGain();appMaster.connect(AC.destination);startKeepAlive();}if(AC.state==='suspended')AC.resume();return AC;}
+var keepAliveEl=null;
+function startKeepAlive(){if(keepAliveEl||!AC)return;var o=AC.createOscillator();var g=AC.createGain();g.gain.value=0;o.connect(g);var d=AC.createMediaStreamDestination();g.connect(d);keepAliveEl=new Audio();keepAliveEl.srcObject=d.stream;keepAliveEl.play().catch(function(){});o.start();}
 const FA=-6.398,FB=16.301;
 function s2f(v){const x=v/10000;return Math.max(1,Math.min(20000,Math.exp(FA*x*x+FB*x)));}
 function f2s(f){const l=Math.log(Math.max(1,Math.min(20000,f)));const d=FB*FB+4*FA*l;if(d<0)return 5000;return Math.round(Math.max(0,Math.min(10000,(FB-Math.sqrt(Math.max(0,d)))/(2*(-FA))*10000)));}
@@ -438,6 +440,7 @@ let rsWv=0,rsMVol=70;
 let rsFqMin=100,rsFqMax=8000,rsFqDur=30,rsFqType='linear',rsFqDir='r';
 let rsPausing=false,rsBloopReturn=false,rsRepCount=0;
 let rsPlaying=false,rsOsc=null,rsSigGn=null,rsMGn=null,rsRAF=null;
+var rsTickFn=null;
 let rsFqFwd=true,rsFqStart=0;
 
 /* ═══════ SWEEP (dual: freq + vol on same signal) ═══════ */
@@ -467,6 +470,7 @@ let swpFqMin=20,swpFqMax=2000,swpFqDur=5,swpFqType='linear',swpFqDir='r';
 let swpPausing=false,swpBloopReturn=false,swpRepCount=0;
 // Vol sweep params
 let swpPlaying=false,swpOsc=null,swpSigGn=null,swpMGn=null,swpRAF=null,swpStart=0;
+var swpTickFn=null;
 let swpFqFwd=true,swpFqStart=0;
 
 function initSwpW(){const c=document.getElementById('swpWaves');WF.forEach((_,i)=>{const b=document.createElement('button');b.className='wbtn'+(i===0?' on':'');b.innerHTML='<span style="font-size:20px;line-height:1">'+WI[i]+'</span>';b.onclick=()=>{swpWv=i;document.querySelectorAll('#swpWaves .wbtn').forEach((x,j)=>x.classList.toggle('on',j===i));if(swpOsc)swpOsc.type=WF[i];};c.appendChild(b);});}
@@ -537,7 +541,7 @@ function toggleSweep(){
       }
     }
     swpRAF=requestAnimationFrame(tick);
-  }tick();
+  }swpTickFn=tick;tick();
 }
 
 /* ═══════ BURST ═══════ */
@@ -1492,7 +1496,7 @@ function toggleRiser(){
       if(!rsPausing){const tf=rsFqFwd?t:1-t;const fq=Math.max(1,Math.min(20000,sweepVal(rsFqType,tf,rsFqMin,rsFqMax)));rsOsc.frequency.setTargetAtTime(fq,AC.currentTime,.005);}
     }
     rsRAF=requestAnimationFrame(tick);
-  }tick();
+  }rsTickFn=tick;tick();
 }
 (function(){
   let sy=0,sx=0,live=false;
@@ -1576,6 +1580,15 @@ mkDirBtns('swpFqDirBtns','r',function(d){swpFqDir=d;swpBloopReturn=false;swpRepC
 syncBurst();initEQ();initNP();renderMulti();drawTunerGauge(0);renderArchive();
 syncRiserUI();updateBBBackground();updateBuBackground();updateNsBackground();
 initRsGlow();initRsSwipe();initBBGlow();initBuGlow();initNsGlow();
+var bgHideAt=0;
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){bgHideAt=performance.now();return;}
+  var gone=performance.now()-bgHideAt;
+  if(AC&&AC.state==='suspended')AC.resume();
+  if(swpPlaying){swpFqStart+=gone;if(swpRAF)cancelAnimationFrame(swpRAF);swpRAF=swpTickFn?requestAnimationFrame(swpTickFn):null;}
+  if(rsPlaying){rsFqStart+=gone;if(rsRAF)cancelAnimationFrame(rsRAF);rsRAF=rsTickFn?requestAnimationFrame(rsTickFn):null;}
+  if(nTransActive){nsLastFrame=performance.now();if(nTransRAF)cancelAnimationFrame(nTransRAF);nTransRAF=requestAnimationFrame(nsTransTick);}
+});
 </script>
 </body>
 </html>
