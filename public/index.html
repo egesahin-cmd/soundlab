@@ -120,7 +120,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 /* ═══ BIRDBOX UI ═══ */
 #modBirdbox.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #bbBg{position:absolute;inset:0;z-index:0;}
-#bbGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
 #bbBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:url(#toEde7d4);}
 #bbControls{display:none;}
 #bbHidden{display:none;}
@@ -128,7 +127,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 /* ═══ RISER UI ═══ */
 #modRiser.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #rsBg{position:absolute;inset:0;z-index:0;}
-#rsGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
 #rsBird{position:absolute;top:calc(50% - 10px);left:50%;transform:translate(-50%,-50%);width:79%;height:79%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:invert(1) brightness(0.78) sepia(1) saturate(0.4) brightness(1.064);}
 #rsControls{display:none;}
 #rsHidden{display:none;}
@@ -136,7 +134,6 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 /* ═══ BURST UI ═══ */
 #modBurst.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #buBg{position:absolute;inset:0;z-index:0;}
-#buGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
 #buBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54%;height:54%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:invert(1) brightness(0.88) sepia(0.15);mix-blend-mode:screen;}
 #buControls{display:none;}
 #buHidden{display:none;}
@@ -145,12 +142,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #modNoise.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
 #nsBg{position:absolute;inset:0;z-index:0;background-color:#000;}
 #nsBg::before{content:'';position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 0% 0%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg)),repeating-conic-gradient(from 0deg at 100% 0%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op2,.5)) var(--min-deg,.5deg) var(--max-deg,50deg)),repeating-conic-gradient(from 0deg at 100% 100%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op3,.5)) var(--min-deg,.5deg) var(--max-deg,50deg)),repeating-conic-gradient(from 0deg at 0% 100%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op4,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:multiply;}
-#nsGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
 #nsBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40%;height:40%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;}
 #nsControls{display:none;}
 #nsHidden{display:none;}
 #nsPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
-@media (hover:none) and (pointer:coarse){#nsBg::before{background:repeating-conic-gradient(from 0deg at 0% 0%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg)),repeating-conic-gradient(from 0deg at 100% 100%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op2,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:multiply;}}
+@media (hover:none) and (pointer:coarse){#nsBg{overflow:hidden;}#nsBg::before{inset:auto;top:0;left:0;width:50%;height:50%;transform:scale(2);transform-origin:0 0;background:repeating-conic-gradient(from 0deg at 0% 0%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg)),repeating-conic-gradient(from 0deg at 100% 100%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op2,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:multiply;}}
 </style>
 </head>
 <body>
@@ -176,7 +172,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <!-- ═══ RISER ═══ -->
 <div class="mod active" id="modRiser">
   <div id="rsBg"></div>
-  <div id="rsGlow"></div>
+
   <img id="rsBird" src="henningchristiansen-riser.svg" alt="">
   <div id="rsPlayBtn" onclick="toggleRiser()"></div>
   <div id="rsControls">
@@ -212,7 +208,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <!-- ═══ BIRDBOX ═══ -->
 <div class="mod" id="modBirdbox">
   <div id="bbBg"></div>
-  <div id="bbGlow"></div>
+
   <img id="bbBird" src="henningchristiansen-bird-nobackground.svg" alt="">
   <div id="bbPlayBtn" onclick="toggleSweep()"></div>
   <div id="bbControls">
@@ -248,7 +244,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <!-- ═══ BURST ═══ -->
 <div class="mod" id="modBurst">
   <div id="buBg"></div>
-  <div id="buGlow"></div>
+
   <img id="buBird" src="tensideddie.svg" alt="">
   <div id="buPlayBtn" onclick="toggleBurst()"></div>
   <div id="buControls">
@@ -274,7 +270,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <!-- ═══ NOISE ═══ -->
 <div class="mod" id="modNoise">
   <div id="nsBg"></div>
-  <div id="nsGlow"></div>
+
   <img id="nsBird" src="white-circle.png" alt="">
   <div id="nsPlayBtn" onclick="toggleNoise()"></div>
   <div id="nsControls">
@@ -736,19 +732,6 @@ function showNsBirdFlash(){
     bird.style.filter='none';
   }
 }
-function initNsGlow(){
-  var mod=document.getElementById('modNoise');
-  var glow=document.getElementById('nsGlow');
-  if(!mod||!glow)return;
-  mod.addEventListener('touchstart',function(e){
-    var r=mod.getBoundingClientRect();
-    var x=e.touches[0].clientX-r.left,y=e.touches[0].clientY-r.top;
-    glow.style.background='radial-gradient(circle at '+x+'px '+y+'px,rgba(255,255,255,.35),transparent 60%)';
-    glow.style.opacity='1';
-  },{passive:true});
-  mod.addEventListener('touchend',function(){glow.style.opacity='0';},{passive:true});
-}
-
 /* ═══════ MULTI ═══════ */
 let multiRows=[],multiMGain=null,multiMVol=50;
 function multiAdd(){
@@ -1291,22 +1274,6 @@ function updateBBBirdOpacity(){
   var t=Math.max(0,Math.min(1,(swpFqDur-0.1)/(3.0-0.1)));
   bird.style.opacity=(0.1+(1-t)*0.9).toFixed(3);
 }
-function initBBGlow(){
-  var mod=document.getElementById('modBirdbox');
-  var glow=document.getElementById('bbGlow');
-  if(!mod||!glow)return;
-  function glowAt(cx,cy){
-    var r=mod.getBoundingClientRect();
-    var xp=((cx-r.left)/r.width*100).toFixed(1);
-    var yp=((cy-r.top)/r.height*100).toFixed(1);
-    glow.style.background='radial-gradient(circle 98px at '+xp+'% '+yp+'%,rgba(255,255,255,0.175),transparent 70%)';
-    glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';
-  }
-  function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
-  mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
-  mod.addEventListener('touchend',hideGlow,{passive:true});
-}
-
 function bbRand(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function randomizeBirdbox(){
   swpFqMin=bbRand(BB_FREQS);
@@ -1352,21 +1319,6 @@ function showBuBirdFlash(){
     bird.style.mixBlendMode='screen';
   }
 }
-function initBuGlow(){
-  var mod=document.getElementById('modBurst');
-  var glow=document.getElementById('buGlow');
-  if(!mod||!glow)return;
-  function glowAt(cx,cy){
-    var r=mod.getBoundingClientRect();
-    var xp=((cx-r.left)/r.width*100).toFixed(1);
-    var yp=((cy-r.top)/r.height*100).toFixed(1);
-    glow.style.background='radial-gradient(circle 98px at '+xp+'% '+yp+'%,rgba(255,255,255,0.175),transparent 70%)';
-    glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';
-  }
-  function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
-  mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
-  mod.addEventListener('touchend',hideGlow,{passive:true});
-}
 function randomizeBurst(){
   var op=bbRand(BURST_DICE);
   burstSpd=r2(Math.max(33,Math.min(9900,burstSpd*op)));
@@ -1411,15 +1363,6 @@ function updateRsBirdOpacity(){
   if(!bird)return;
   var t=Math.max(0,Math.min(1,(rsFqDur-30)/(500-30)));
   bird.style.opacity=(0.1+(1-t)*0.9).toFixed(3);
-}
-function initRsGlow(){
-  var mod=document.getElementById('modRiser');
-  var glow=document.getElementById('rsGlow');
-  if(!mod||!glow)return;
-  function glowAt(cx,cy){var r=mod.getBoundingClientRect();var xp=((cx-r.left)/r.width*100).toFixed(1);var yp=((cy-r.top)/r.height*100).toFixed(1);glow.style.background='radial-gradient(circle 98px at '+xp+'% '+yp+'%,rgba(255,255,255,0.175),transparent 70%)';glow.style.transition='opacity 0.1s ease';glow.style.opacity='1';}
-  function hideGlow(){glow.style.transition='opacity 0.4s ease';glow.style.opacity='0';}
-  mod.addEventListener('touchmove',function(e){var t=e.touches[0];glowAt(t.clientX,t.clientY);},{passive:true});
-  mod.addEventListener('touchend',hideGlow,{passive:true});
 }
 function initRsSwipe(){
   var mod=document.getElementById('modRiser');
@@ -1588,7 +1531,7 @@ mkDirBtns('rsFqDirBtns','r',function(d){rsFqDir=d;rsBloopReturn=false;rsRepCount
 mkDirBtns('swpFqDirBtns','r',function(d){swpFqDir=d;swpBloopReturn=false;swpRepCount=0;if(swpPausing){swpPausing=false;swpFqFwd=parsDir(d).base!=='left';swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},BB_DIRS.map(function(d){return d.k;}));
 syncBurst();initEQ();initNP();renderMulti();drawTunerGauge(0);renderArchive();
 syncRiserUI();updateBBBackground();updateBuBackground();updateNsBackground();
-initRsGlow();initRsSwipe();initBBGlow();initBuGlow();initNsGlow();
+initRsSwipe();
 var bgHideAt=0;
 document.addEventListener('visibilitychange',function(){
   if(document.hidden){bgHideAt=performance.now();return;}
