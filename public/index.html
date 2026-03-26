@@ -141,6 +141,14 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #buControls{display:none;}
 #buHidden{display:none;}
 #buPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
+/* ═══ NOISE UI ═══ */
+#modNoise.active{display:block;position:relative;height:100%;padding:0;overflow:hidden;}
+#nsBg{position:absolute;inset:0;z-index:0;}
+#nsGlow{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;}
+#nsBird{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;object-fit:contain;pointer-events:none;z-index:2;opacity:1;filter:url(#toEde7d4);}
+#nsControls{display:none;}
+#nsHidden{display:none;}
+#nsPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -263,28 +271,22 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
 <!-- ═══ NOISE ═══ -->
 <div class="mod" id="modNoise">
-  <div style="width:100%;max-width:360px">
-    <div class="lbl" style="margin-bottom:4px">COLOUR</div>
-    <div id="nColorP" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-    <div class="lbl" style="margin:6px 0 4px">SPECIAL</div>
-    <div id="nSpecP" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-  </div>
-  <div id="eqSliders" style="display:flex;gap:2px;justify-content:center;width:100%;max-width:360px;padding:4px 0"></div>
-  <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="nVolL">VOLUME — 60%</span><span>100%</span></div><input type="range" id="nVolR" min="0" max="100" value="60" oninput="nVol=+this.value;document.getElementById('nVolL').textContent='VOLUME — '+nVol+'%';if(nMGain&&AC)nMGain.gain.setTargetAtTime(v2g(nVol),AC.currentTime,.02)"></div>
-  <div class="section-toggle" onclick="togSection('nVsSec')">VOLUME SWEEP<span id="nVsSecArrow" style="color:#b89520">▼</span></div>
-  <div class="section-body swp-sub" id="nVsSec">
-    <button class="bsm" id="nVsOnB" onclick="toggleNoiseVs()">OFF</button>
-    <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center" id="nVsTypes"></div>
-    <div style="display:flex;gap:12px;align-items:center">
-      <div style="text-align:center"><div class="lbl">A</div><span class="vnum" style="font-size:18px" id="nVsMinV" onclick="tapNum('nVsMinV',0,100,v=>{nVsMin=v})">0.00</span><span class="vunit">%</span></div>
-      <span style="color:#e8ddb0">→</span>
-      <div style="text-align:center"><div class="lbl">B</div><span class="vnum" style="font-size:18px" id="nVsMaxV" onclick="tapNum('nVsMaxV',0,100,v=>{nVsMax=v})">100.00</span><span class="vunit">%</span></div>
+  <div id="nsBg"></div>
+  <div id="nsGlow"></div>
+  <img id="nsBird" src="henningchristiansen-objekt-tone.svg" alt="">
+  <div id="nsPlayBtn" onclick="toggleNoise()"></div>
+  <div id="nsControls">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <button class="pbtn" id="nPB" onclick="toggleNoise()"><svg id="nPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="nSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
+      <div class="lbl" id="nPL">PLAY</div>
     </div>
-    <div style="text-align:center"><div class="lbl">DURATION</div><span class="vnum" style="font-size:18px" id="nVsDurV" onclick="tapNum('nVsDurV',0.001,2000,v=>{nVsDur=v},false,3)">5.000</span><span class="vunit">sec</span></div>
-    <div style="display:flex;gap:5px" id="nVsDirBtns"></div>
   </div>
-  <button class="pbtn" id="nPB" onclick="toggleNoise()"><svg id="nPI" width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#2d6a4e"/></svg><svg id="nSI" width="18" height="18" viewBox="0 0 24 24" style="display:none"><rect x="4" y="4" width="16" height="16" rx="2" fill="#ede7d4"/></svg></button>
-  <div class="lbl" id="nPL">PLAY</div>
+  <div id="nsHidden">
+    <div id="nColorP" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+    <div id="nSpecP" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+    <div id="eqSliders" style="display:flex;gap:2px;justify-content:center;width:100%;max-width:360px;padding:4px 0"></div>
+    <div class="rr"><div class="lbl-row lbl"><span>0%</span><span id="nVolL">VOLUME — 60%</span><span>100%</span></div><input type="range" id="nVolR" min="0" max="100" value="60" oninput="nVol=+this.value;document.getElementById('nVolL').textContent='VOLUME — '+nVol+'%';if(nMGain&&AC)nMGain.gain.setTargetAtTime(v2g(nVol),AC.currentTime,.02)"></div>
+  </div>
 </div>
 
 <!-- ═══ MULTI ═══ -->
@@ -388,9 +390,6 @@ function tapNum(id,min,max,cb,isInt,dec){
   inp.onkeydown=e=>{if(e.key==='Enter')done();if(e.key==='Escape'){inp.value=old;done();}};inp.onblur=done;
 }
 function togSection(id){const b=document.getElementById(id);const o=b.classList.toggle('open');document.getElementById(id+'Arrow').textContent=o?'▲':'▼';}
-function syncSwpArrows(){
-  document.getElementById('nVsSecArrow').style.color=nVsOn?'#ecc735':'#b89520';
-}
 function setPB(id,p){document.getElementById(id+'PB').classList.toggle('on',p);document.getElementById(id+'PI').style.display=p?'none':'';document.getElementById(id+'SI').style.display=p?'':'none';document.getElementById(id+'PL').textContent=p?'STOP':'PLAY';}
 function mkDirBtns(containerId,dirVar,setFn,dirs){
   dirs=dirs||['fwd','pp','rev'];
@@ -421,10 +420,11 @@ function switchTab(t){
   document.querySelector('.plus-btn').classList.toggle('active',plusTabs.includes(t));
   TN.forEach(n=>{const m=document.getElementById('mod'+n.charAt(0).toUpperCase()+n.slice(1));if(m)m.classList.toggle('active',n===t);});
   closePlusMenu();
-  document.querySelector('.content').style.overflow=(t==='birdbox'||t==='riser'||t==='burst')?'hidden':'';
+  document.querySelector('.content').style.overflow=(t==='birdbox'||t==='riser'||t==='burst'||t==='noise')?'hidden':'';
   if(t==='birdbox'&&!bbInitialized){bbInitialized=true;randomizeBirdbox();}
   if(t==='riser'&&!rsInitialized){rsInitialized=true;randomizeRiser();}
   if(t==='burst'&&!buInitialized){buInitialized=true;initBurstRandom();}
+  if(t==='noise'&&!nsInitialized){nsInitialized=true;randomizeNoise();}
 }
 function togglePlusMenu(e){e.stopPropagation();document.getElementById('plusMenu').classList.toggle('open');}
 function closePlusMenu(){document.getElementById('plusMenu').classList.remove('open');}
@@ -603,9 +603,15 @@ const PRESETS={
 };
 const NOISE_COLORS=Object.keys(PRESETS).slice(0,8);
 const NOISE_SPEC=Object.keys(PRESETS).slice(8);
-let nNodes=[],nMGain=null,nVsGn=null,nOn=false,nSl=[50,50,50,50,50,50,50,50,50,50],nVol=60,nAPre='White',eqDrag=-1;
-let nVsOn=false,nVsMin=0,nVsMax=100,nVsDur=5,nVsType='linear',nVsDir='fwd';
-let nVsPlaying=false,nVsFwd=true,nVsStart=0,nVsRAF=null;
+let nNodes=[],nMGain=null,nOn=false,nSl=[50,50,50,50,50,50,50,50,50,50],nVol=60,nAPre='White',eqDrag=-1;
+let nsInitialized=false;
+let nTransActive=false,nTransStart=0,nTransDur=5,nTransType='linear';
+let nTransStartSl=[],nTransTargetSl=[];
+let nTransStartVol=60,nTransTargetVol=60;
+let nTransRAF=null;
+const NS_VOLS=[0,5,10,25,30,50,75,80,85,90,95,100];
+const NS_DURS=[3,4,5,6,7,10,12,15,20,30,45,60,90,120];
+const NS_PRESETS=Object.keys(PRESETS);
 function initEQ(){
   const c=document.getElementById('eqSliders');
   BANDS.forEach((_,i)=>{
@@ -637,34 +643,87 @@ function applyNP(name){
   document.querySelectorAll('#modNoise .preset').forEach(b=>b.classList.toggle('on',b.textContent===name));
 }
 function toggleNoise(){
+  showNsBirdFlash();
   const c=getAC();
-  if(nOn){nNodes.forEach(n=>{try{n.src.stop();}catch(e){}});nNodes=[];stopNVs();nOn=false;setPB('n',false);return;}
+  if(nOn){nNodes.forEach(n=>{try{n.src.stop();}catch(e){}});nNodes=[];nTransActive=false;if(nTransRAF){cancelAnimationFrame(nTransRAF);nTransRAF=null;}nOn=false;setPB('n',false);showNsBirdFlash();return;}
   if(!nMGain){nMGain=c.createGain();nMGain.connect(appMaster);}
-  if(!nVsGn){nVsGn=c.createGain();nVsGn.connect(nMGain);}
-  nVsGn.gain.value=1;
   nMGain.gain.setTargetAtTime(v2g(nVol),c.currentTime,.02);
   const buf=mkNB(c);
-  nNodes=BANDS.map((fc,i)=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=fc;f.Q.value=fc<100?.5:1.2;const g=c.createGain();g.gain.value=v2g(nSl[i]);s.connect(f);f.connect(g);g.connect(nVsGn);s.start();return{src:s,gain:g};});
-  nOn=true;setPB('n',true);if(nVsOn)startNVs();
+  nNodes=BANDS.map((fc,i)=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=fc;f.Q.value=fc<100?.5:1.2;const g=c.createGain();g.gain.value=v2g(nSl[i]);s.connect(f);f.connect(g);g.connect(nMGain);s.start();return{src:s,gain:g};});
+  nOn=true;setPB('n',true);showNsBirdFlash();
 }
-function toggleNoiseVs(){
-  nVsOn=!nVsOn;
-  const btn=document.getElementById('nVsOnB');
-  btn.textContent=nVsOn?'ON':'OFF';btn.classList.toggle('on',nVsOn);
-  if(nVsOn&&nOn)startNVs();
-  else if(!nVsOn)stopNVs();
-  syncSwpArrows();
+function randomizeNoise(){
+  nTransStartSl=nSl.slice();
+  nTransStartVol=nVol;
+  nAPre=bbRand(NS_PRESETS);
+  nTransTargetSl=PRESETS[nAPre].slice();
+  nTransTargetVol=bbRand(NS_VOLS);
+  nTransDur=bbRand(NS_DURS);
+  nTransType=bbRand(STYPES);
+  nTransStart=performance.now();
+  nTransActive=true;
+  if(nTransRAF) cancelAnimationFrame(nTransRAF);
+  nTransRAF=requestAnimationFrame(nsTransTick);
+  updateNsBackground();
 }
-function startNVs(){
-  if(nVsPlaying)return;nVsPlaying=true;nVsFwd=nVsDir!=='rev';nVsStart=performance.now();
-  (function tick(){if(!nVsPlaying)return;const now=performance.now();let t=(now-nVsStart)/1000/nVsDur;
-    if(t>=1){if(nVsDir==='pp'){nVsFwd=!nVsFwd;}else{nVsFwd=nVsDir!=='rev';}nVsStart=now;t=0;}
-    if(!nVsFwd)t=1-t;
-    const vl=Math.max(0,Math.min(100,sweepVal(nVsType,t,nVsMin,nVsMax)));
-    if(nVsGn&&AC)nVsGn.gain.setTargetAtTime(v2g(vl),AC.currentTime,.005);
-    nVsRAF=requestAnimationFrame(tick);})();
+function nsTransTick(){
+  if(!nTransActive){nTransRAF=null;return;}
+  var now=performance.now();
+  var t=Math.min(1,(now-nTransStart)/1000/nTransDur);
+  for(var i=0;i<10;i++){
+    nSl[i]=Math.round(sweepVal(nTransType,t,nTransStartSl[i],nTransTargetSl[i]));
+    if(nNodes[i]&&AC)nNodes[i].gain.gain.setTargetAtTime(v2g(nSl[i]),AC.currentTime,.02);
+  }
+  nVol=sweepVal(nTransType,t,nTransStartVol,nTransTargetVol);
+  if(nMGain&&AC)nMGain.gain.setTargetAtTime(v2g(nVol),AC.currentTime,.02);
+  updateNsBackground();
+  if(t>=1){
+    nSl=nTransTargetSl.slice();nVol=nTransTargetVol;
+    randomizeNoise();return;
+  }
+  nTransRAF=requestAnimationFrame(nsTransTick);
 }
-function stopNVs(){if(nVsRAF)cancelAnimationFrame(nVsRAF);nVsPlaying=false;if(nVsGn&&AC)nVsGn.gain.setTargetAtTime(1,AC.currentTime,.02);}
+function updateNsBackground(){
+  var drL=5+((nSl[0]+nSl[1])/2)*0.45;
+  var pkL=10+((nSl[2]+nSl[3])/2)*0.65;
+  var grL=5+((nSl[4]+nSl[5])/2)*0.65;
+  var blL=5+((nSl[6]+nSl[7])/2)*0.50;
+  var mgL=10+((nSl[8]+nSl[9])/2)*0.55;
+  var deg=(nVol*3.6).toFixed(2);
+  var g='repeating-linear-gradient('+deg+'deg,'
+    +'#ede7d4,'
+    +'hsl(0,0%,'+grL+'%) 1px,'
+    +'hsl(350,100%,'+pkL+'%) 2px,'
+    +'hsl(0,100%,'+drL+'%) 3px,'
+    +'hsl(240,100%,'+blL+'%) 4px,'
+    +'hsl(300,100%,'+mgL+'%) 5px,'
+    +'#ede7d4 6px)';
+  var el=document.getElementById('nsBg');
+  if(el)el.style.background=g;
+}
+function showNsBirdFlash(){
+  var bird=document.getElementById('nsBird');
+  if(!bird)return;
+  if(nOn){
+    bird.style.transition='filter 0.6s ease';
+    bird.style.filter='none';
+  }else{
+    bird.style.transition='none';
+    bird.style.filter='url(#toEde7d4)';
+  }
+}
+function initNsGlow(){
+  var mod=document.getElementById('modNoise');
+  var glow=document.getElementById('nsGlow');
+  if(!mod||!glow)return;
+  mod.addEventListener('touchstart',function(e){
+    var r=mod.getBoundingClientRect();
+    var x=e.touches[0].clientX-r.left,y=e.touches[0].clientY-r.top;
+    glow.style.background='radial-gradient(circle at '+x+'px '+y+'px,rgba(255,255,255,.35),transparent 60%)';
+    glow.style.opacity='1';
+  },{passive:true});
+  mod.addEventListener('touchend',function(){glow.style.opacity='0';},{passive:true});
+}
 
 /* ═══════ MULTI ═══════ */
 let multiRows=[],multiMGain=null,multiMVol=50;
@@ -989,7 +1048,6 @@ function captureState(){
     sw:swpWv,sm:swpMVol,si:swpFqMin,sx:swpFqMax,sd:swpFqDur,st:TYPE_ENC[swpFqType]||'l',sr:DIR_ENC[swpFqDir]||'f',
     bs:SRC_ENC[burstSrc]||'s',bp:burstSpd,bw:burstWaves,bv:burstVol,
     ns:nSl.slice(),nv:nVol,np:nAPre,
-    no:nVsOn?1:0,ni:nVsMin,nx:nVsMax,nd:nVsDur,nt:TYPE_ENC[nVsType]||'l',nr:DIR_ENC[nVsDir]||'f',
     mv:multiMVol,
     mr:multiRows.map(r=>({t:r.type==='TONE'?0:1,f:r.freq,w:r.wave,v:r.vol,p:r.noisePreset,s:r.noiseSl.slice()}))
   };
@@ -1005,7 +1063,7 @@ function restoreState(o){
   swpWv=o.sw;swpMVol=o.sm;swpFqMin=o.si;swpFqMax=o.sx;swpFqDur=o.sd;swpFqType=TYPE_DEC[o.st]||'linear';swpFqDir=DIR_DEC[o.sr]||'r';
   burstSrc=SRC_DEC[o.bs]||'sine';burstSpd=o.bp||200;burstWaves=o.bw||1;burstVol=o.bv!=null?o.bv:60;
   nSl=o.ns.slice();nVol=o.nv;nAPre=o.np||null;
-  nVsOn=!!o.no;nVsMin=o.ni;nVsMax=o.nx;nVsDur=o.nd;nVsType=TYPE_DEC[o.nt]||'linear';nVsDir=DIR_DEC[o.nr]||'fwd';
+  nTransActive=false;if(nTransRAF){cancelAnimationFrame(nTransRAF);nTransRAF=null;}
   multiMVol=o.mv;
   multiRows=(o.mr||[]).map(r=>({id:Date.now()+Math.random(),type:r.t===0?'TONE':'NOISE',playing:false,osc:null,gain:null,nodes:[],vol:r.v,freq:r.f,wave:r.w,noisePreset:r.p||'White',noiseSl:r.s.slice()}));
   syncRiserUI();syncSweepUI();syncBurstUI();syncNoiseUI();syncMultiUI();
@@ -1036,14 +1094,7 @@ function syncNoiseUI(){
   document.getElementById('nVolL').textContent='VOLUME \u2014 '+nVol+'%';
   document.getElementById('nVolR').value=nVol;
   document.querySelectorAll('#modNoise .preset').forEach(b=>b.classList.toggle('on',nAPre&&b.textContent===nAPre));
-  document.getElementById('nVsOnB').textContent=nVsOn?'ON':'OFF';
-  document.getElementById('nVsOnB').classList.toggle('on',nVsOn);
-  document.getElementById('nVsMinV').textContent=nVsMin.toFixed(2);
-  document.getElementById('nVsMaxV').textContent=nVsMax.toFixed(2);
-  document.getElementById('nVsDurV').textContent=nVsDur.toFixed(3);
-  document.querySelectorAll('#nVsTypes .preset').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===nVsType));
-  document.querySelectorAll('#nVsDirBtns .bsm').forEach(b=>b.classList.toggle('on',b.dataset.dir===nVsDir));
-  syncSwpArrows();
+  updateNsBackground();
   setPB('n',false);
 }
 function syncMultiUI(){
@@ -1444,6 +1495,7 @@ function toggleRiser(){
     var dxRaw=e.changedTouches[0].clientX-sx;
     var dx=Math.abs(dxRaw);
     if(dy>80&&dy>dx*1.5&&document.getElementById('modBirdbox').classList.contains('active'))randomizeBirdbox();
+    if(dy>80&&dy>dx*1.5&&document.getElementById('modNoise').classList.contains('active'))randomizeNoise();
     if(document.getElementById('modBurst').classList.contains('active')){
       if(dy>80&&dy>dx*1.5){randomizeBurst();}
       else if(dx>60&&dx>Math.abs(dy)*1.5){
@@ -1484,6 +1536,14 @@ function toggleRiser(){
     randomizeBurst();
   });
 })();
+(function(){
+  var mod=document.getElementById('modNoise');
+  mod.addEventListener('click',function(e){
+    if(window.matchMedia('(hover:none) and (pointer:coarse)').matches)return;
+    if(e.target.closest('#nsPlayBtn'))return;
+    randomizeNoise();
+  });
+})();
 document.addEventListener('keydown',function(e){
   if(!document.getElementById('modBurst').classList.contains('active'))return;
   if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
@@ -1499,14 +1559,12 @@ document.addEventListener('keydown',function(e){
 syncRsW();initSwpW();
 initSwpTypes('rsFqTypes','linear',t=>{rsFqType=t;});
 initSwpTypes('swpFqTypes','linear',t=>{swpFqType=t;});
-initVsTypes('nVsTypes','linear',t=>{nVsType=t;});
 initBSrc();
 mkDirBtns('rsFqDirBtns','r',function(d){rsFqDir=d;rsBloopReturn=false;rsRepCount=0;if(rsPausing){rsPausing=false;rsFqFwd=parsDir(d).base!=='left';rsFqStart=performance.now();if(rsSigGn&&AC)rsSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},['r','l']);
 mkDirBtns('swpFqDirBtns','r',function(d){swpFqDir=d;swpBloopReturn=false;swpRepCount=0;if(swpPausing){swpPausing=false;swpFqFwd=parsDir(d).base!=='left';swpFqStart=performance.now();if(swpSigGn&&AC)swpSigGn.gain.setTargetAtTime(1,AC.currentTime,.01);}},BB_DIRS.map(function(d){return d.k;}));
-mkDirBtns('nVsDirBtns','fwd',d=>{nVsDir=d;});
-syncBurst();initEQ();initNP();renderMulti();drawTunerGauge(0);renderArchive();syncSwpArrows();
-syncRiserUI();updateBBBackground();updateBuBackground();
-initRsGlow();initRsSwipe();initBBGlow();initBuGlow();
+syncBurst();initEQ();initNP();renderMulti();drawTunerGauge(0);renderArchive();
+syncRiserUI();updateBBBackground();updateBuBackground();updateNsBackground();
+initRsGlow();initRsSwipe();initBBGlow();initBuGlow();initNsGlow();
 </script>
 </body>
 </html>
