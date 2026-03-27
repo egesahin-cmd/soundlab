@@ -151,7 +151,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #nsControls{display:none;}
 #nsHidden{display:none;}
 #nsPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
-@media (hover:none) and (pointer:coarse){#nsBg{overflow:hidden;}#nsBg::before{inset:auto;top:0;left:0;width:25%;height:25%;transform:scale(4);transform-origin:0 0;background:repeating-conic-gradient(from -180deg at 50% 50%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:normal;}}
+@media (hover:none) and (pointer:coarse){#nsBg{overflow:hidden;}#nsBg::before{inset:auto;top:0;left:0;width:25%;height:25%;transform:scale(4);transform-origin:0 0;background:repeating-conic-gradient(from -180deg at 50% 50%,#ede7d4 0deg var(--min-deg,.5deg),hsl(0,0%,var(--lum,50%)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:normal;}}
 </style>
 </head>
 <body>
@@ -713,8 +713,9 @@ function updateNsBackground(){
   nsBgEl.style.setProperty('--min-deg',minDeg+'deg');
   nsBgEl.style.setProperty('--max-deg',maxDeg+'deg');
   if(nsMobile){
-    var opAll=((nSl[0]+nSl[1]+nSl[2])/300+(nSl[3]+nSl[4])/200+(nSl[5]+nSl[6])/200+(nSl[7]+nSl[8]+nSl[9])/300)/4;
-    nsBgEl.style.setProperty('--op1',opAll);
+    var hf=(nSl[7]+nSl[8]+nSl[9])/3;
+    var lum=hf;
+    nsBgEl.style.setProperty('--lum',lum+'%');
   }else{
     var op1=(nSl[0]+nSl[1]+nSl[2])/300;
     var op2=(nSl[3]+nSl[4])/200;
