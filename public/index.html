@@ -13,9 +13,14 @@
 html,body{height:100%;overflow:hidden;background:#ede7d4;font-family:'DM Mono',monospace;color:#7a8c6e}
 input,button,select{font-family:'DM Mono',monospace}
 #app{max-width:480px;margin:0 auto;height:100%;display:flex;flex-direction:column;overflow:hidden}
-.tabs{display:flex;border-bottom:1px solid #c2ccb6;padding-top:env(safe-area-inset-top,8px);background:#ede7d4;flex-shrink:0}
-.tab{flex:1;padding:12px 0;border:none;background:transparent;color:#b0baa6;font-size:10px;font-weight:500;cursor:pointer;letter-spacing:1.5px;border-bottom:2px solid transparent;transition:all .15s}
-.tab.active{color:#2d6a4e;border-bottom-color:#2d6a4e}
+.tabs{display:flex;padding-top:env(safe-area-inset-top,8px);background:#ede7d4;flex-shrink:0}
+.tab{flex:1;padding:12px 0;border:none;background:transparent;color:#fff;font-size:10px;font-weight:400;cursor:pointer;letter-spacing:1.5px;transition:all .15s}
+.tab.active{font-weight:700}
+.tab.active[data-tab="riser"]{color:#555}
+.tab.active[data-tab="birdbox"]{color:#2d6a4e}
+.tab.active[data-tab="burst"]{color:#000}
+.tab.active[data-tab="noise"]{color:#fff}
+.tab.active[data-tab="multi"]{color:#555}
 .plus-wrap{position:relative;flex-shrink:0;display:flex;align-items:stretch}
 .plus-btn{padding:12px 10px;border:none;background:transparent;color:#b0baa6;font-size:16px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Mono',monospace}
 .plus-btn.active{color:#2d6a4e;border-bottom-color:#2d6a4e}
@@ -146,17 +151,17 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 #nsControls{display:none;}
 #nsHidden{display:none;}
 #nsPlayBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25%;aspect-ratio:1;border-radius:50%;z-index:4;cursor:pointer;}
-@media (hover:none) and (pointer:coarse){#nsBg{overflow:hidden;}#nsBg::before{inset:auto;top:0;left:0;width:25%;height:25%;transform:scale(4);transform-origin:0 0;background:repeating-conic-gradient(from 0deg at 50% 50%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:normal;}}
+@media (hover:none) and (pointer:coarse){#nsBg{overflow:hidden;}#nsBg::before{inset:auto;top:0;left:0;width:25%;height:25%;transform:scale(4);transform-origin:0 0;background:repeating-conic-gradient(from -180deg at 50% 50%,#ede7d4 0deg var(--min-deg,.5deg),rgba(255,255,255,var(--op1,.5)) var(--min-deg,.5deg) var(--max-deg,50deg));background-blend-mode:normal;}}
 </style>
 </head>
 <body>
 <div id="app">
 <div class="tabs">
   <button class="tab active" data-tab="riser" onclick="switchTab('riser')">VISTA</button>
-  <button class="tab" onclick="switchTab('birdbox')">BIRDBOX</button>
+  <button class="tab" data-tab="birdbox" onclick="switchTab('birdbox')">BIRDBOX</button>
   <button class="tab" data-tab="burst" onclick="switchTab('burst')">TENFACE</button>
-  <button class="tab" onclick="switchTab('noise')">NOISE</button>
-  <button class="tab" onclick="switchTab('multi')">MULTI</button>
+  <button class="tab" data-tab="noise" onclick="switchTab('noise')">NOISE</button>
+  <button class="tab" data-tab="multi" onclick="switchTab('multi')">MULTI</button>
   <div class="plus-wrap">
     <button class="plus-btn" onclick="togglePlusMenu(event)">+</button>
     <div class="plus-menu" id="plusMenu">
@@ -700,9 +705,11 @@ var nsBgEl=null;
 function updateNsBackground(){
   if(!nsBgEl)nsBgEl=document.getElementById('nsBg');
   if(!nsBgEl)return;
-  var t=(nVol-33.33)/66.67;var maxDeg=100*Math.pow(0.0101,t);
+  var t=(nVol-33.33)/66.67;
   var ratio=nsVisDur/Math.max(nVol,0.01);
-  var minDeg=0.01+Math.min(1,Math.max(0,(ratio-0.03)/2.67))*0.99;
+  var n=Math.min(1,Math.max(0,(ratio-0.03)/2.67));
+  if(nsMobile){var minDeg=0.01+n*89.99;var maxDeg=360*Math.pow(90.01/360,t);}
+  else{var minDeg=0.01+n*0.99;var maxDeg=100*Math.pow(0.0101,t);}
   nsBgEl.style.setProperty('--min-deg',minDeg+'deg');
   nsBgEl.style.setProperty('--max-deg',maxDeg+'deg');
   if(nsMobile){
