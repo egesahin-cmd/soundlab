@@ -708,7 +708,7 @@ function updateNsBackground(){
   var t=(nVol-33.33)/66.67;
   var ratio=nsVisDur/Math.max(nVol,0.01);
   var n=Math.min(1,Math.max(0,(ratio-0.03)/2.67));
-  if(nsMobile){var minDeg=90.00-n*89.99;var maxDeg=360*Math.pow(90.01/360,t);}
+  if(nsMobile){var minDeg=0.01+n*89.99;var maxDeg=90.01*Math.pow(360/90.01,t);}
   else{var minDeg=0.01+n*0.99;var maxDeg=100*Math.pow(0.0101,t);}
   nsBgEl.style.setProperty('--min-deg',minDeg+'deg');
   nsBgEl.style.setProperty('--max-deg',maxDeg+'deg');
