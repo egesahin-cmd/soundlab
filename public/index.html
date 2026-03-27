@@ -713,8 +713,8 @@ function updateNsBackground(){
   nsBgEl.style.setProperty('--min-deg',minDeg+'deg');
   nsBgEl.style.setProperty('--max-deg',maxDeg+'deg');
   if(nsMobile){
-    var hf=(nSl[7]+nSl[8]+nSl[9])/3;
-    var lum=hf;
+    var hf=(nSl[7]+nSl[8]+nSl[9])/300;
+    var lum=85+hf*15;
     nsBgEl.style.setProperty('--lum',lum+'%');
   }else{
     var op1=(nSl[0]+nSl[1]+nSl[2])/300;
