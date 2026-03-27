@@ -22,7 +22,7 @@ input,button,select{font-family:'DM Mono',monospace}
 .tab.active[data-tab="noise"]{color:#fff}
 .tab.active[data-tab="multi"]{color:#555}
 .plus-wrap{position:relative;flex-shrink:0;display:flex;align-items:stretch}
-.plus-btn{padding:12px 10px;border:none;background:transparent;color:#b0baa6;font-size:16px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Mono',monospace}
+.plus-btn{padding:12px 10px;border:none;background:transparent;color:#fff;font-size:16px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Mono',monospace}
 .plus-btn.active{color:#2d6a4e;border-bottom-color:#2d6a4e}
 .plus-menu{display:none;position:absolute;top:100%;right:0;background:#f8f4eb;border:1px solid #c2ccb6;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.08);z-index:10;min-width:120px;overflow:hidden}
 .plus-menu.open{display:block}
@@ -708,7 +708,7 @@ function updateNsBackground(){
   var t=(nVol-33.33)/66.67;
   var ratio=nsVisDur/Math.max(nVol,0.01);
   var n=Math.min(1,Math.max(0,(ratio-0.03)/2.67));
-  if(nsMobile){var minDeg=0.01+n*89.99;var maxDeg=360*Math.pow(90.01/360,t);}
+  if(nsMobile){var minDeg=90.00-n*89.99;var maxDeg=360*Math.pow(90.01/360,t);}
   else{var minDeg=0.01+n*0.99;var maxDeg=100*Math.pow(0.0101,t);}
   nsBgEl.style.setProperty('--min-deg',minDeg+'deg');
   nsBgEl.style.setProperty('--max-deg',maxDeg+'deg');
